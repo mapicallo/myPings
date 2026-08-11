@@ -1,0 +1,14 @@
+node_modules/
+*.zip
+releases/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+*.local
+.env
+.env.*
+apps/extension/public/icons/*.png
+!apps/extension/public/icons/.gitkeep
+apps/extension/dist/**/*.map

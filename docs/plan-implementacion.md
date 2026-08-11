@@ -1,12 +1,14 @@
 # My Pings — Plan de implementación
 
 **Fecha:** 2026-08-12  
-**Estado:** plan inicial (repo vacío / scaffold docs)  
+**Estado:** **v0.1.0** — Fase 0+1 hechas (scaffold + embudo RSS). Siguiente: Fase 2 (GitHub + calendario)  
 **Nombre CWS:** **My Pings**  
 **Tagline:** *All your chosen alerts in one list*  
-**ES (UI):** subtítulo sugerido — *Tus avisos elegidos, en una sola lista*  
+**ES (UI):** *Tus avisos elegidos, en una sola lista*  
 **Repo:** https://github.com/mapicallo/myPings  
 **Workspace:** `C:\code-myPings\`  
+**Load unpacked:** `apps/extension/dist`  
+**ZIP:** `apps/extension/releases/MyPings-v0.1.0.zip`  
 **Familia:** utilidad AI4Context (productividad / menos ruido)  
 **Referencias UX:** AccessPortal / LocalChat / Is this site safe (panel flotante, i18n, packing CWS)
 
@@ -142,27 +144,26 @@ chrome.storage / IndexedDB (local)
 
 ## 7. Fases de implementación
 
-### Fase 0 — Bootstrap (v0.0.x)
+### Fase 0 — Bootstrap (v0.0.x) → **hecho en v0.1.0**
 
 | Entrega | Detalle |
 |---------|---------|
 | Git | Repo `myPings`, `main`, remote origin |
-| Scaffold | `apps/extension`: manifest, panel, SW, i18n EN/ES, iconos placeholder |
+| Scaffold | `apps/extension`: manifest, panel, SW, i18n EN/ES, iconos |
 | Scripts | `dev`, `build`, `pack` |
-| Docs | README, este plan, `CHROME_WEB_STORE.md` borrador, `privacy.html` borrador |
-| UI vacía | Embudo con estado vacío + pantalla “Add source” stub |
+| Docs | README, este plan, `CHROME_WEB_STORE.md`, `privacy.html` |
+| UI | Embudo + Add source |
 
-**Criterio done:** load unpacked + panel abre + “No pings yet”.
+**Criterio done:** load unpacked + panel abre + “No pings yet”. ✅
 
-### Fase 1 — RSS embudo (v0.1.0) — **primera utilidad real**
+### Fase 1 — RSS embudo (v0.1.0) — **hecho**
 
-- Añadir feeds RSS/Atom  
-- Refresh → filas en lista All  
-- Abrir / marcar leído  
-- Categoría “News” / “Custom”  
-- Privacy: se fetch-ean las URLs de feed que el usuario añadió  
+- Añadir feeds RSS/Atom (permiso de host opcional por origen)  
+- Refresh → filas en lista All / News / Custom  
+- Abrir / marcar leído / quitar fuente  
+- Privacy documentada  
 
-**Criterio done:** 3 feeds reales → lista usable en scroll.
+**Criterio done:** feeds reales → lista usable en scroll. ✅
 
 ### Fase 2 — GitHub + Calendario (v0.2.0)
 

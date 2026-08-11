@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Pings</title>
+    <link rel="icon" type="image/png" sizes="48x48" href="./icons/icon48.png" />
+    <link rel="stylesheet" href="./src/panel.css" />
+  </head>
+  <body>
+    <div class="app mp-shell">
+      <header class="mp-brand-header">
+        <div class="mp-brand-row">
+          <div class="mp-logo">
+            <div class="mp-logo-icon" aria-hidden="true">
+              <img src="./icons/icon48.png" width="44" height="44" alt="" />
+            </div>
+            <div class="mp-logo-text">
+              <h1 class="mp-app-title" data-i18n="appName">My Pings</h1>
+              <p class="mp-app-subtitle" data-i18n="tagline">All your chosen alerts in one list</p>
+            </div>
+          </div>
+          <label class="mp-lang-selector" for="locale-select">
+            <span class="mp-lang-label" data-i18n="langLabel">Language</span>
+            <select id="locale-select" aria-label="Language">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <main class="mp-scroll">
+        <p class="help" data-i18n="helpOnDemand"></p>
+
+        <div class="toolbar">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab active" data-tab="all" data-i18n="tabAll">All</button>
+            <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
+            <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" class="btn secondary" id="refresh-btn" data-i18n="refresh">Refresh</button>
+            <button type="button" class="btn primary" id="add-source-btn" data-i18n="addSource">Add source</button>
+          </div>
+        </div>
+
+        <p id="status-line" class="status-line" hidden></p>
+        <p id="form-error" class="error" hidden></p>
+
+        <section id="add-panel" class="add-panel" hidden>
+          <h2 class="section-title" data-i18n="addSource">Add source</h2>
+          <label class="field">
+            <span data-i18n="feedUrlLabel">Feed URL</span>
+            <input
+              id="feed-url"
+              type="url"
+              inputmode="url"
+              autocomplete="off"
+              spellcheck="false"
+              data-i18n-placeholder="feedUrlPlaceholder"
+              placeholder="https://example.com/feed.xml"
+            />
+          </label>
+          <label class="field">
+            <span data-i18n="categoryLabel">Category</span>
+            <select id="feed-category">
+              <option value="news" data-i18n="catNews">News</option>
+              <option value="custom" data-i18n="catCustom">Custom</option>
+            </select>
+          </label>
+          <div class="form-actions">
+            <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add feed</button>
+            <button type="button" class="btn ghost" id="cancel-add-btn" data-i18n="cancel">Cancel</button>
+          </div>
+        </section>
+
+        <section id="sources-panel" class="sources-panel">
+          <h2 class="section-title" data-i18n="sourcesTitle">Your RSS sources</h2>
+          <ul id="sources-list" class="sources-list"></ul>
+        </section>
+
+        <section id="empty-state" class="empty-state" hidden>
+          <p class="empty-title" data-i18n="emptyTitle">No pings yet</p>
+          <p class="empty-hint" data-i18n="emptyHint"></p>
+        </section>
+
+        <ul id="ping-list" class="ping-list"></ul>
+      </main>
+
+      <div class="mp-version-strip" id="version-strip">v0.1.0</div>
+
+      <footer class="mp-site-footer" role="contentinfo">
+        <div class="mp-site-footer-inner">
+          <div class="mp-footer-brand-cluster">
+            <span class="mp-footer-accent" aria-hidden="true"></span>
+            <img class="mp-footer-brand-img" src="./icons/icon48.png" width="32" height="32" alt="" />
+          </div>
+          <span class="mp-footer-by">
+            <span data-i18n="footerByPrefix">by</span> <strong>AI4Context</strong>
+          </span>
+          <span class="mp-footer-divider" aria-hidden="true"></span>
+          <a
+            class="mp-footer-support"
+            href="https://www.ai4context.com/mission-support"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="footerSupport"
+            >Support</a
+          >
+          <span class="mp-footer-divider" aria-hidden="true"></span>
+          <a href="#" id="privacy-link" class="mp-footer-support" data-i18n="privacy">Privacy</a>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="./src/panel.ts"></script>
+  </body>
+</html>

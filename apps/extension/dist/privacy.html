@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — My Pings</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+        color: #212529;
+        background: #f8f9fa;
+        padding: 1.5rem;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+      }
+      .muted {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy Policy — My Pings</h1>
+      <p class="muted">Last updated: August 2026 · Version 0.1.0</p>
+      <p>
+        <strong>My Pings</strong> is a Chrome extension by <strong>AI4Context</strong>. It shows an
+        on-demand list of alerts from <em>sources you choose</em> (starting with RSS/Atom feeds).
+      </p>
+      <h2>Data we process</h2>
+      <ul>
+        <li>
+          Feed URLs and titles you add, plus items fetched from those feeds (title, link, dates),
+          stored in <code>chrome.storage.local</code> on your device.
+        </li>
+        <li>UI language preference and read/unread state for list items.</li>
+        <li>
+          When you refresh or add a feed, the extension requests host access and fetches that feed
+          URL over HTTPS/HTTP.
+        </li>
+      </ul>
+      <h2>What we do not do</h2>
+      <ul>
+        <li>We do not read your operating-system notification center.</li>
+        <li>We do not monitor browsing in the background.</li>
+        <li>We do not upload your feed list or ping items to AI4Context servers in v0.1.</li>
+        <li>We do not sell your data.</li>
+      </ul>
+      <h2>Permissions</h2>
+      <ul>
+        <li><code>storage</code> — local sources, pings, and preferences.</li>
+        <li>
+          Optional host access — only for feed origins you add, so the extension can download those
+          feeds.
+        </li>
+      </ul>
+      <h2>Contact</h2>
+      <p>
+        AI4Context —
+        <a href="https://www.ai4context.com/mission-support">ai4context.com/mission-support</a>
+        ·
+        <a href="https://github.com/mapicallo/myPings/issues">GitHub Issues</a>
+      </p>
+    </main>
+  </body>
+</html>

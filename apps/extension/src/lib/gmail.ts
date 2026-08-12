@@ -1,3 +1,4 @@
+import { isExtension } from './platform.js';
 import type { PingItem, PingSource } from './types.js';
 
 const GMAIL_API = 'https://gmail.googleapis.com/gmail/v1/users/me';
@@ -21,6 +22,7 @@ function oauthClientId(): string | undefined {
 
 /** True when manifest has a real OAuth client ID (not the repo placeholder). */
 export function isGmailOAuthConfigured(): boolean {
+  if (!isExtension()) return false;
   const clientId = oauthClientId();
   if (!clientId || !clientId.endsWith('.apps.googleusercontent.com')) return false;
   const lower = clientId.toLowerCase();
@@ -28,7 +30,8 @@ export function isGmailOAuthConfigured(): boolean {
 }
 
 export function gmailExtensionId(): string {
-  return chrome.runtime.id;
+  if (isExtension() && chrome.runtime?.id) return chrome.runtime.id;
+  return 'web-pwa';
 }
 
 export function isGmailOAuthError(err: unknown): boolean {

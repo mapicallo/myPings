@@ -1,3 +1,4 @@
+import { storageGet, storageSet } from './platform.js';
 import type { PingItem, PingSource } from './types.js';
 
 const SOURCES_KEY = 'mp_sources';
@@ -13,17 +14,17 @@ export function newId(): string {
 }
 
 export async function loadSources(): Promise<PingSource[]> {
-  const data = await chrome.storage.local.get(SOURCES_KEY);
+  const data = await storageGet<Record<string, unknown>>(SOURCES_KEY);
   const raw = data[SOURCES_KEY];
   return Array.isArray(raw) ? (raw as PingSource[]) : [];
 }
 
 export async function saveSources(sources: PingSource[]): Promise<void> {
-  await chrome.storage.local.set({ [SOURCES_KEY]: sources });
+  await storageSet({ [SOURCES_KEY]: sources });
 }
 
 export async function loadPings(): Promise<PingItem[]> {
-  const data = await chrome.storage.local.get(PINGS_KEY);
+  const data = await storageGet<Record<string, unknown>>(PINGS_KEY);
   const raw = data[PINGS_KEY];
   return Array.isArray(raw) ? (raw as PingItem[]) : [];
 }
@@ -33,7 +34,7 @@ export async function savePings(pings: PingItem[]): Promise<void> {
     .slice()
     .sort((a, b) => (a.receivedAt < b.receivedAt ? 1 : -1))
     .slice(0, MAX_PINGS);
-  await chrome.storage.local.set({ [PINGS_KEY]: trimmed });
+  await storageSet({ [PINGS_KEY]: trimmed });
 }
 
 /** Merge new items by id; keep existing read flags. */

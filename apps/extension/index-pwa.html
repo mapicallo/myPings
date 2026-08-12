@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>My Pings</title>
+    <meta name="description" content="My Pings — all your chosen alerts in one list. On demand." />
+    <meta name="theme-color" content="#667eea" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="My Pings" />
+    <link rel="icon" type="image/png" sizes="48x48" href="./icons/icon48.png" />
+    <link rel="apple-touch-icon" href="./icons/icon128.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="stylesheet" href="./src/panel.css" />
+  </head>
+  <body>
+    <div class="app mp-shell">
+      <header class="mp-brand-header">
+        <div class="mp-brand-row">
+          <div class="mp-logo">
+            <div class="mp-logo-icon" aria-hidden="true">
+              <img src="./icons/icon48.png" width="44" height="44" alt="" />
+            </div>
+            <div class="mp-logo-text">
+              <h1 class="mp-app-title" data-i18n="appName">My Pings</h1>
+              <p class="mp-app-subtitle" data-i18n="tagline">All your chosen alerts in one list</p>
+            </div>
+          </div>
+          <label class="mp-lang-selector" for="locale-select">
+            <span class="mp-lang-label" data-i18n="langLabel">Language</span>
+            <select id="locale-select" aria-label="Language">
+              <option value="en">English</option>
+              <option value="es">Español</option>
+            </select>
+          </label>
+        </div>
+      </header>
+
+      <nav class="nav-primary" role="tablist" aria-label="Main navigation">
+        <button type="button" class="nav-primary-btn active" data-screen="inbox" role="tab" aria-selected="true" data-i18n="navInbox">
+          My pings
+        </button>
+        <button type="button" class="nav-primary-btn" data-screen="sources" role="tab" aria-selected="false" data-i18n="navSources">
+          Sources
+        </button>
+      </nav>
+
+      <main class="mp-scroll">
+        <section id="view-inbox" class="view view-active" role="tabpanel">
+          <p class="view-intro" data-i18n="inboxIntro"></p>
+
+          <div class="inbox-toolbar">
+            <div class="tabs category-tabs" role="tablist" aria-label="Filter by category">
+              <button type="button" class="tab active" data-tab="all" data-i18n="tabAll">All</button>
+              <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
+              <button type="button" class="tab" data-tab="dev" data-i18n="tabDev">Dev</button>
+              <button type="button" class="tab" data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
+              <button type="button" class="tab" data-tab="email" data-i18n="tabEmail">Email</button>
+              <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
+            </div>
+            <button type="button" class="btn secondary btn-block-mobile" id="refresh-btn" data-i18n="refresh">Refresh</button>
+          </div>
+
+          <p id="status-line" class="status-line" hidden></p>
+
+          <section id="empty-state" class="empty-state" hidden>
+            <p class="empty-title" data-i18n="emptyTitle">No pings yet</p>
+            <p class="empty-hint" data-i18n="emptyHint"></p>
+            <button type="button" class="btn primary" id="empty-go-sources" data-i18n="emptyGoSources"></button>
+          </section>
+
+          <ul id="ping-list" class="ping-list"></ul>
+        </section>
+
+        <section id="view-sources" class="view" role="tabpanel" hidden>
+          <div class="pedagogy-card">
+            <h2 class="pedagogy-title" data-i18n="sourcesIntroTitle">Connect your alerts</h2>
+            <p class="pedagogy-body" data-i18n="sourcesIntroBody"></p>
+          </div>
+
+          <section class="add-panel">
+            <h2 class="section-title" data-i18n="addSource">Add source</h2>
+
+            <label class="field">
+              <span data-i18n="sourceTypeLabel">Source type</span>
+              <select id="source-type">
+                <option value="rss" data-i18n="sourceTypeRss">RSS / Atom</option>
+                <option value="github" data-i18n="sourceTypeGithub">GitHub</option>
+                <option value="ics" data-i18n="sourceTypeIcs">Calendar (ICS)</option>
+                <option value="hn" data-i18n="sourceTypeHn">Hacker News</option>
+                <option value="reddit" data-i18n="sourceTypeReddit">Reddit</option>
+                <option value="gmail" data-i18n="sourceTypeGmail">Gmail</option>
+              </select>
+            </label>
+
+            <div id="source-type-guide" class="source-type-guide" role="note"></div>
+
+            <div id="field-gmail-action" class="gmail-action-panel" hidden>
+              <p id="gmail-action-ready" class="gmail-ready-block">
+                <span class="gmail-action-title" data-i18n="gmailActionTitle">No URL to paste</span>
+                <span class="gmail-action-steps" data-i18n="gmailActionSteps"></span>
+              </p>
+              <p id="gmail-unavailable-user" class="gmail-unavailable-notice" hidden></p>
+              <details id="gmail-dev-details" class="gmail-dev-details" hidden>
+                <summary data-i18n="gmailDevSummary">Developer setup</summary>
+                <p id="gmail-setup-notice" class="gmail-setup-notice"></p>
+                <a
+                  id="gmail-setup-link"
+                  class="gmail-setup-link"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </details>
+            </div>
+
+            <label class="field" id="field-feed-url">
+              <span id="feed-url-label" data-i18n="feedUrlLabel">URL / identifier</span>
+              <input
+                id="feed-url"
+                type="url"
+                inputmode="url"
+                autocomplete="off"
+                spellcheck="false"
+                data-i18n-placeholder="feedUrlPlaceholder"
+                placeholder="https://example.com/feed.xml"
+              />
+              <span id="field-url-hint" class="field-hint"></span>
+            </label>
+
+            <label class="field" id="field-gh-token" hidden>
+              <span data-i18n="ghTokenLabel">Personal access token (optional)</span>
+              <input
+                id="gh-token"
+                type="password"
+                autocomplete="off"
+                data-i18n-placeholder="ghTokenPlaceholder"
+                placeholder="ghp_…"
+              />
+              <span class="field-hint" data-i18n="fieldGhTokenHint"></span>
+            </label>
+
+            <label class="field">
+              <span data-i18n="categoryLabel">Category</span>
+              <select id="feed-category">
+                <option value="news" data-i18n="catNews">News</option>
+                <option value="dev" data-i18n="catDev">Dev</option>
+                <option value="calendar" data-i18n="catCalendar">Calendar</option>
+                <option value="email" data-i18n="catEmail">Email</option>
+                <option value="custom" data-i18n="catCustom">Custom</option>
+              </select>
+              <span class="field-hint" data-i18n="categoryHint"></span>
+            </label>
+
+            <label class="field">
+              <span data-i18n="priorityKeywordsLabel">Priority keywords</span>
+              <input
+                id="priority-keywords"
+                type="text"
+                autocomplete="off"
+                data-i18n-placeholder="priorityKeywordsPlaceholder"
+                placeholder="urgent, invoice, deadline"
+              />
+              <span class="field-hint" data-i18n="priorityHint"></span>
+            </label>
+
+            <p id="form-error" class="error" hidden></p>
+
+            <div class="form-actions">
+              <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add source</button>
+            </div>
+          </section>
+
+          <section id="sources-panel" class="sources-panel">
+            <h2 class="section-title" data-i18n="sourcesTitle">Your sources</h2>
+            <p class="sources-manage-hint" data-i18n="sourcesManageHint"></p>
+            <p class="sources-transfer-hint" data-i18n="sourcesTransferHint"></p>
+            <div class="sources-transfer-actions">
+              <button type="button" class="btn secondary" id="export-sources-btn" data-i18n="exportSources">
+                Export sources
+              </button>
+              <button type="button" class="btn secondary" id="import-sources-btn" data-i18n="importSources">
+                Import sources
+              </button>
+              <input type="file" id="import-sources-file" accept=".json,application/json" hidden />
+            </div>
+            <p id="sources-status" class="status-line" hidden></p>
+            <ul id="sources-list" class="sources-list"></ul>
+          </section>
+        </section>
+      </main>
+
+      <div class="mp-version-strip" id="version-strip">v0.5.0</div>
+
+      <footer class="mp-site-footer" role="contentinfo">
+        <div class="mp-site-footer-inner">
+          <div class="mp-footer-brand-cluster">
+            <span class="mp-footer-accent" aria-hidden="true"></span>
+            <img class="mp-footer-brand-img" src="./icons/icon48.png" width="32" height="32" alt="" />
+          </div>
+          <span class="mp-footer-by">
+            <span data-i18n="footerByPrefix">by</span> <strong>AI4Context</strong>
+          </span>
+          <span class="mp-footer-divider" aria-hidden="true"></span>
+          <a
+            class="mp-footer-support"
+            href="https://www.ai4context.com/mission-support"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n="footerSupport"
+            >Support</a
+          >
+          <span class="mp-footer-divider" aria-hidden="true"></span>
+          <a href="#" id="privacy-link" class="mp-footer-support" data-i18n="privacy">Privacy</a>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="./src/panel.ts"></script>
+  </body>
+</html>

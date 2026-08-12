@@ -1,0 +1,16 @@
+{
+  "name": "My Pings",
+  "short_name": "My Pings",
+  "description": "All your chosen alerts in one list — on demand.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#667eea",
+  "theme_color": "#667eea",
+  "lang": "en",
+  "icons": [
+    { "src": "./icons/icon48.png", "sizes": "48x48", "type": "image/png" },
+    { "src": "./icons/icon128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

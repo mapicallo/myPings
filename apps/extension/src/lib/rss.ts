@@ -1,7 +1,9 @@
 import { newId } from './storage.js';
+import { isExtension } from './platform.js';
 import type { PingItem, PingSource } from './types.js';
 
 export async function ensureFeedPermission(feedUrl: string): Promise<boolean> {
+  if (!isExtension()) return true;
   let originPattern: string;
   try {
     const u = new URL(feedUrl);

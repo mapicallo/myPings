@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy — My Pings</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        line-height: 1.5;
+        color: #212529;
+        background: #f8f9fa;
+        padding: 1.5rem;
+      }
+      main {
+        max-width: 40rem;
+        margin: 0 auto;
+        background: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+      }
+      .muted {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Privacy Policy — My Pings</h1>
+      <p class="muted">Last updated: August 2026 · Version 0.3.0</p>
+      <p>
+        <strong>My Pings</strong> is a Chrome extension by <strong>AI4Context</strong>. It shows an
+        on-demand list of alerts from <em>sources you choose</em>.
+      </p>
+      <h2>Data we process (on your device)</h2>
+      <ul>
+        <li>Source URLs, titles, and types you add (RSS, GitHub, ICS, HN, Reddit, Gmail).</li>
+        <li>Ping items fetched on refresh (title, link, dates, read state).</li>
+        <li>UI language, priority keywords, and silence timers per source.</li>
+        <li>GitHub personal access tokens, if you provide one (stored in <code>chrome.storage.local</code>).</li>
+        <li>Gmail OAuth tokens managed by Chrome when you connect Gmail (metadata scope only).</li>
+      </ul>
+      <h2>Data fetched on refresh</h2>
+      <ul>
+        <li><strong>RSS/ICS:</strong> feed content from URLs you add.</li>
+        <li><strong>GitHub:</strong> public API for events you configure.</li>
+        <li><strong>Hacker News:</strong> Algolia HN API (public).</li>
+        <li><strong>Reddit:</strong> public JSON for subreddits you choose.</li>
+        <li><strong>Gmail:</strong> unread message metadata (from, subject, date) — no email body.</li>
+      </ul>
+      <h2>What we do not do</h2>
+      <ul>
+        <li>We do not read your operating-system notification center.</li>
+        <li>We do not monitor browsing in the background.</li>
+        <li>We do not upload your sources or pings to AI4Context servers.</li>
+        <li>We do not sell your data.</li>
+      </ul>
+      <h2>Permissions</h2>
+      <ul>
+        <li><code>storage</code> — local sources, pings, and preferences.</li>
+        <li><code>identity</code> — Gmail OAuth (only if you add Gmail).</li>
+        <li>Optional host access — for origins you add (feeds, Reddit, HN, etc.).</li>
+        <li><code>https://www.googleapis.com/*</code> — Gmail API when connected.</li>
+      </ul>
+      <h2>Contact</h2>
+      <p>
+        AI4Context —
+        <a href="https://www.ai4context.com/mission-support">ai4context.com/mission-support</a>
+        ·
+        <a href="https://github.com/mapicallo/myPings/issues">GitHub Issues</a>
+      </p>
+    </main>
+  </body>
+</html>

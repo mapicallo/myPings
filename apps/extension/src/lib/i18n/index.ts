@@ -17,7 +17,7 @@ let current: Locale = 'en';
 
 export async function loadLocale(): Promise<Locale> {
   try {
-    const data = await chrome.storage.local.get(LOCALE_KEY);
+    const data = await storageGet<Record<string, unknown>>(LOCALE_KEY);
     if (isLocale(data[LOCALE_KEY])) return data[LOCALE_KEY];
   } catch {
     /* ignore */
@@ -26,7 +26,7 @@ export async function loadLocale(): Promise<Locale> {
 }
 
 export async function saveLocale(locale: Locale): Promise<void> {
-  await chrome.storage.local.set({ [LOCALE_KEY]: locale });
+  await storageSet({ [LOCALE_KEY]: locale });
 }
 
 export function getLocale(): Locale {

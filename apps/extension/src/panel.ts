@@ -26,6 +26,7 @@ import {
   silenceSource,
   unsilenceSource,
 } from './lib/storage.js';
+import { extensionPrivacyUrl, isExtension, openUrl } from './lib/platform.js';
 import { APP_VERSION, type PingCategory, type PingItem, type PingSource, type SourceType } from './lib/types.js';
 
 type Screen = 'inbox' | 'sources';
@@ -545,7 +546,7 @@ pingList.addEventListener('click', (ev) => {
   if (!ping) return;
 
   if (btn.dataset.action === 'open' && ping.url) {
-    void chrome.tabs.create({ url: ping.url, active: true });
+    openUrl(ping.url);
     void markPingRead(id, true).then((next) => { pings = next; renderPings(); });
     return;
   }
@@ -571,7 +572,7 @@ localeSelect.addEventListener('change', () => {
 
 privacyLink.addEventListener('click', (e) => {
   e.preventDefault();
-  window.open(chrome.runtime.getURL('privacy.html'), '_blank', 'noopener,noreferrer');
+  openUrl(extensionPrivacyUrl());
 });
 
 bindCategoryTabs();
@@ -584,4 +585,11 @@ void (async () => {
   applyStaticTranslations();
   versionStrip.textContent = `v${APP_VERSION}`;
   await reloadState();
+
+  if (!isExtension() && 'serviceWorker' in navigator) {
+    const swUrl = `${import.meta.env.BASE_URL}sw.js`;
+    void navigator.serviceWorker.register(swUrl).catch(() => {
+      /* offline or blocked — app still works without SW */
+    });
+  }
 })();

@@ -16,6 +16,16 @@ export const es: Messages = {
   sourcesIntroBody:
     'Una “fuente” es un sitio que tú eliges seguir: un feed de noticias, un repo de GitHub, un calendario, un subreddit o tu correo. My Pings consulta bajo demanda al pulsar Actualizar. No lee el centro de notificaciones del sistema.',
   sourcesManageHint: 'Fuentes que ya has añadido. Puedes silenciarlas o quitarlas aquí.',
+  sourcesTransferHint:
+    'Comparte tu lista de fuentes con otra persona: exporta un JSON y envíaselo. Ella lo importa en Fuentes. No se incluyen tokens de GitHub ni login de Gmail — cada uno conecta los suyos.',
+  exportSources: 'Exportar fuentes',
+  importSources: 'Importar fuentes',
+  exportSourcesOk: 'Fuentes exportadas.',
+  importSourcesOk: 'Importadas {n} fuente(s). Ve a Mis pings y pulsa Actualizar.',
+  importSourcesSkipped: 'Importadas {n} fuente(s), omitidas {s} duplicada(s).',
+  importSourcesNone: 'Sin fuentes nuevas — ya estaban todas.',
+  errorImportInvalid: 'Archivo no válido. Usa una exportación de fuentes de My Pings (.json).',
+  errorExportEmpty: 'Aún no hay fuentes para exportar.',
   sourceGuideRss:
     'RSS / Atom es un formato que publican muchos blogs y medios. Busca “RSS”, “Feed” o el icono naranja en la web. Pega aquí esa URL.',
   sourceGuideGithub:

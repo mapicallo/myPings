@@ -2,7 +2,7 @@
 
 **My Pings — All your chosen alerts in one list**
 
-Chrome extension (AI4Context): an on-demand funnel of alerts from sources you choose. **v0.3.0** adds HN, Reddit, Gmail metadata, and priority keywords.
+Chrome extension (AI4Context): an on-demand funnel of alerts from sources you choose. **v0.4.0** adds export/import of source lists for sharing.
 
 | | |
 |--|--|
@@ -31,7 +31,8 @@ Chrome → Extensions → Developer mode → Load unpacked → `apps/extension/d
 
 | Version | Scope |
 |---------|--------|
-| **0.3.0** | Fase 3: HN, Reddit, Gmail metadata, priority keywords, Email tab |
+| **0.4.0** | Export / import sources (JSON share pack) |
+| **0.3.x** | HN, Reddit, Gmail metadata, priority keywords, UX polish |
 | 0.2.0 | Fase 2: GitHub + ICS calendar, Dev/Calendar tabs, silence source |
 | 0.1.0 | Fase 0+1: panel AI4Context, i18n EN/ES, RSS embudo |
 | 0.4.x | CWS polish (planned) |

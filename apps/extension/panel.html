@@ -166,12 +166,23 @@
           <section id="sources-panel" class="sources-panel">
             <h2 class="section-title" data-i18n="sourcesTitle">Your sources</h2>
             <p class="sources-manage-hint" data-i18n="sourcesManageHint"></p>
+            <p class="sources-transfer-hint" data-i18n="sourcesTransferHint"></p>
+            <div class="sources-transfer-actions">
+              <button type="button" class="btn secondary" id="export-sources-btn" data-i18n="exportSources">
+                Export sources
+              </button>
+              <button type="button" class="btn secondary" id="import-sources-btn" data-i18n="importSources">
+                Import sources
+              </button>
+              <input type="file" id="import-sources-file" accept=".json,application/json" hidden />
+            </div>
+            <p id="sources-status" class="status-line" hidden></p>
             <ul id="sources-list" class="sources-list"></ul>
           </section>
         </section>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.3.5</div>
+      <div class="mp-version-strip" id="version-strip">v0.4.0</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

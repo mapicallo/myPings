@@ -13,6 +13,7 @@ import { isHighPriority, sortWithPriority } from './lib/priority.js';
 import { errorKeyForType, PermissionError, refreshPingSource } from './lib/refresh.js';
 import { redditTitleFromInput } from './lib/reddit.js';
 import { ensureFeedPermission, probeAndBuildSource } from './lib/rss.js';
+import { downloadSourcesExport, mergeImportedSources } from './lib/sourceTransfer.js';
 import {
   isSourceSilenced,
   loadPings,
@@ -49,6 +50,10 @@ const fieldUrlHint = document.getElementById('field-url-hint')!;
 const formError = document.getElementById('form-error')!;
 const statusLine = document.getElementById('status-line')!;
 const sourcesList = document.getElementById('sources-list')!;
+const exportSourcesBtn = document.getElementById('export-sources-btn') as HTMLButtonElement;
+const importSourcesBtn = document.getElementById('import-sources-btn') as HTMLButtonElement;
+const importSourcesFile = document.getElementById('import-sources-file') as HTMLInputElement;
+const sourcesStatus = document.getElementById('sources-status')!;
 const pingList = document.getElementById('ping-list')!;
 const emptyState = document.getElementById('empty-state')!;
 const emptyGoSources = document.getElementById('empty-go-sources') as HTMLButtonElement;
@@ -99,6 +104,12 @@ function setStatus(msg: string | null): void {
   statusLine.textContent = msg;
 }
 
+function setSourcesStatus(msg: string | null): void {
+  if (!msg) { sourcesStatus.hidden = true; sourcesStatus.textContent = ''; return; }
+  sourcesStatus.hidden = false;
+  sourcesStatus.textContent = msg;
+}
+
 function relativeTime(iso: string | null): string {
   if (!iso) return '';
   const t0 = new Date(iso).getTime();
@@ -137,6 +148,7 @@ function setScreen(screen: Screen): void {
   });
 
   if (screen === 'sources') clearError();
+  else setSourcesStatus(null);
 }
 
 function renderSources(): void {
@@ -431,6 +443,43 @@ function icsTitleFromUrl(url: string): string {
   try { return new URL(url).hostname; } catch { return 'Calendar'; }
 }
 
+function exportSources(): void {
+  clearError();
+  setSourcesStatus(null);
+  if (!sources.length) {
+    showError(t('errorExportEmpty'));
+    return;
+  }
+  downloadSourcesExport(sources);
+  setSourcesStatus(t('exportSourcesOk'));
+}
+
+async function importSourcesFromFile(file: File): Promise<void> {
+  clearError();
+  setSourcesStatus(null);
+  try {
+    const text = await file.text();
+    const { added, skipped } = mergeImportedSources(sources, text);
+    if (!added.length) {
+      setSourcesStatus(t('importSourcesNone'));
+      return;
+    }
+    sources = [...sources, ...added];
+    await saveSources(sources);
+    renderAll();
+    if (skipped > 0) {
+      setSourcesStatus(t('importSourcesSkipped').replace('{n}', String(added.length)).replace('{s}', String(skipped)));
+    } else {
+      setSourcesStatus(t('importSourcesOk').replace('{n}', String(added.length)));
+    }
+  } catch (e) {
+    console.warn('[My Pings] import sources', e);
+    showError(t('errorImportInvalid'));
+  } finally {
+    importSourcesFile.value = '';
+  }
+}
+
 function bindCategoryTabs(): void {
   document.querySelectorAll<HTMLButtonElement>('.category-tabs .tab').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -497,6 +546,12 @@ refreshBtn.addEventListener('click', () => void refreshAll());
 confirmAddBtn.addEventListener('click', () => void addFeed());
 sourceTypeSelect.addEventListener('change', syncAddForm);
 emptyGoSources.addEventListener('click', () => setScreen('sources'));
+exportSourcesBtn.addEventListener('click', () => exportSources());
+importSourcesBtn.addEventListener('click', () => importSourcesFile.click());
+importSourcesFile.addEventListener('change', () => {
+  const file = importSourcesFile.files?.[0];
+  if (file) void importSourcesFromFile(file);
+});
 
 localeSelect.addEventListener('change', () => {
   void setLocale(localeSelect.value as Locale).then(() => renderAll());

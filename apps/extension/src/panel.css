@@ -394,6 +394,29 @@ body {
   line-height: 1.45;
 }
 
+.gmail-setup-notice {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: #fde8e8;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #991b1b;
+  line-height: 1.4;
+}
+
+.gmail-setup-notice[hidden],
+.gmail-setup-link[hidden] {
+  display: none !important;
+}
+
+.gmail-setup-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
 .form-actions {
   display: flex;
   gap: 8px;

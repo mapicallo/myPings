@@ -6,7 +6,7 @@ import {
   type Locale,
   type MessageKey,
 } from './lib/i18n/index.js';
-import { connectGmail } from './lib/gmail.js';
+import { connectGmail, gmailExtensionId, isGmailOAuthConfigured, isGmailOAuthError } from './lib/gmail.js';
 import { hnTitleFromInput } from './lib/hn.js';
 import { isHighPriority, sortWithPriority } from './lib/priority.js';
 import { errorKeyForType, PermissionError, refreshPingSource } from './lib/refresh.js';
@@ -38,6 +38,8 @@ const feedCategory = document.getElementById('feed-category') as HTMLSelectEleme
 const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectElement;
 const fieldFeedUrl = document.getElementById('field-feed-url')!;
 const fieldGmailAction = document.getElementById('field-gmail-action')!;
+const gmailSetupNotice = document.getElementById('gmail-setup-notice')!;
+const gmailSetupLink = document.getElementById('gmail-setup-link') as HTMLAnchorElement;
 const fieldGhToken = document.getElementById('field-gh-token')!;
 const ghTokenInput = document.getElementById('gh-token') as HTMLInputElement;
 const priorityKeywordsInput = document.getElementById('priority-keywords') as HTMLInputElement;
@@ -194,17 +196,33 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function withExtId(key: 'errorGmailNotConfigured' | 'errorGmailOAuthFailed' | 'gmailSetupNotice'): string {
+  return t(key).replace('{extId}', gmailExtensionId());
+}
+
 function syncAddForm(): void {
   const st = sourceTypeSelect.value as SourceType;
+  const gmailReady = isGmailOAuthConfigured();
+
   fieldGhToken.hidden = st !== 'github';
   fieldFeedUrl.hidden = st === 'gmail';
   fieldGmailAction.hidden = st !== 'gmail';
+
+  if (st === 'gmail' && !gmailReady) {
+    gmailSetupNotice.hidden = false;
+    gmailSetupNotice.textContent = withExtId('gmailSetupNotice');
+    gmailSetupLink.hidden = false;
+  } else {
+    gmailSetupNotice.hidden = true;
+    gmailSetupLink.hidden = true;
+  }
 
   sourceTypeGuide.textContent = t(GUIDE_KEYS[st]);
   const hintKey = URL_HINT_KEYS[st];
   fieldUrlHint.textContent = hintKey ? t(hintKey) : '';
 
   confirmAddBtn.textContent = st === 'gmail' ? t('addGmailBtn') : t('addFeed');
+  confirmAddBtn.disabled = st === 'gmail' && !gmailReady;
 
   if (st === 'github') {
     feedUrlInput.placeholder = t('ghUrlPlaceholder');
@@ -337,6 +355,10 @@ async function addFeed(): Promise<void> {
       };
       fresh = await refreshPingSource(source);
     } else if (st === 'gmail') {
+      if (!isGmailOAuthConfigured()) {
+        showError(withExtId('errorGmailNotConfigured'));
+        return;
+      }
       await connectGmail();
       source = {
         id: newId(), type: 'gmail', url: 'gmail', title: 'Gmail',
@@ -368,9 +390,19 @@ async function addFeed(): Promise<void> {
     renderAll();
   } catch (e) {
     console.warn('[My Pings] add source', e);
-    showError(t('errorGeneric'));
+    const msg = e instanceof Error ? e.message : String(e);
+    if (msg === 'GMAIL_NOT_CONFIGURED') {
+      showError(withExtId('errorGmailNotConfigured'));
+    } else if (st === 'gmail' && isGmailOAuthError(e)) {
+      showError(withExtId('errorGmailOAuthFailed'));
+    } else if (st === 'gmail') {
+      showError(t('errorGmail'));
+    } else {
+      showError(t('errorGeneric'));
+    }
   } finally {
     confirmAddBtn.disabled = false;
+    syncAddForm();
   }
 }
 

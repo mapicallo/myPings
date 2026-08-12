@@ -68,6 +68,13 @@ export const en: Messages = {
   gmailActionSteps:
     'Tap “Connect Gmail” below. Google will ask you to sign in and grant read-only access to unread mail metadata (sender, subject, date). Email body is never read.',
   addGmailBtn: 'Connect Gmail',
+  gmailSetupNotice:
+    'One-time developer setup: register OAuth in Google Cloud Console with this extension ID: {extId}. See GMAIL_OAUTH.md in the repo.',
+  gmailSetupLink: 'Setup guide (GitHub)',
+  errorGmailNotConfigured:
+    'Gmail OAuth is not configured. Replace the placeholder client_id in manifest.json. Extension ID: {extId}',
+  errorGmailOAuthFailed:
+    'Google sign-in failed (bad client ID). The OAuth client must list this extension ID: {extId}',
   priorityKeywordsLabel: 'Priority keywords (optional)',
   priorityKeywordsPlaceholder: 'urgent, invoice, deadline',
   priorityBadge: 'priority',

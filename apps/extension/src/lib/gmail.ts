@@ -1,6 +1,7 @@
 import type { PingItem, PingSource } from './types.js';
 
 const GMAIL_API = 'https://gmail.googleapis.com/gmail/v1/users/me';
+const PLACEHOLDER_MARKERS = ['REPLACE_WITH', 'YOUR_CLIENT_ID', 'your_client_id'];
 
 interface GmailMessageList {
   messages?: { id: string }[];
@@ -14,7 +15,32 @@ interface GmailMessage {
   payload?: { headers?: { name: string; value: string }[] };
 }
 
+function oauthClientId(): string | undefined {
+  return chrome.runtime.getManifest().oauth2?.client_id;
+}
+
+/** True when manifest has a real OAuth client ID (not the repo placeholder). */
+export function isGmailOAuthConfigured(): boolean {
+  const clientId = oauthClientId();
+  if (!clientId || !clientId.endsWith('.apps.googleusercontent.com')) return false;
+  const lower = clientId.toLowerCase();
+  return !PLACEHOLDER_MARKERS.some((m) => lower.includes(m.toLowerCase()));
+}
+
+export function gmailExtensionId(): string {
+  return chrome.runtime.id;
+}
+
+export function isGmailOAuthError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  const lower = msg.toLowerCase();
+  return lower.includes('oauth') || lower.includes('bad client id') || lower.includes('client id');
+}
+
 async function getAuthToken(): Promise<string> {
+  if (!isGmailOAuthConfigured()) {
+    throw new Error('GMAIL_NOT_CONFIGURED');
+  }
   return new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({ interactive: true }, (token) => {
       if (chrome.runtime.lastError || !token) {

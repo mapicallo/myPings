@@ -399,6 +399,7 @@ body {
 }
 
 .gmail-action-title {
+  display: block;
   margin: 0 0 6px;
   font-size: 0.88rem;
   font-weight: 700;
@@ -406,25 +407,50 @@ body {
 }
 
 .gmail-action-steps {
+  display: block;
   margin: 0;
   font-size: 0.82rem;
   color: var(--muted);
   line-height: 1.45;
 }
 
+.gmail-unavailable-notice {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.gmail-dev-details {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.gmail-dev-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.gmail-dev-details[hidden],
+.gmail-ready-block[hidden],
+.gmail-unavailable-notice[hidden] {
+  display: none !important;
+}
+
 .gmail-setup-notice {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   padding: 8px 10px;
   background: #fde8e8;
   border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #991b1b;
   line-height: 1.4;
 }
 
-.gmail-setup-notice[hidden],
-.gmail-setup-link[hidden] {
-  display: none !important;
+.gmail-setup-notice:empty {
+  display: none;
 }
 
 .gmail-setup-link {

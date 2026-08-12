@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "My Pings",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "My Pings — all your chosen alerts in one list. RSS, GitHub, HN, Reddit, Gmail & more. On demand.",
   "action": {
     "default_title": "My Pings",

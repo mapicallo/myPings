@@ -67,6 +67,8 @@ export type MessageKey =
   | 'gmailActionTitle'
   | 'gmailActionSteps'
   | 'addGmailBtn'
+  | 'gmailUnavailableUser'
+  | 'gmailDevSummary'
   | 'gmailSetupNotice'
   | 'gmailSetupLink'
   | 'errorGmailNotConfigured'

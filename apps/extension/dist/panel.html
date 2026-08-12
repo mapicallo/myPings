@@ -6,7 +6,7 @@
     <title>My Pings</title>
     <link rel="icon" type="image/png" sizes="48x48" href="./icons/icon48.png" />
     <script type="module" crossorigin src="./assets/panel.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/panel-BaAiYSQ3.css">
+    <link rel="stylesheet" crossorigin href="./assets/panel-RzcrzMwP.css">
   </head>
   <body>
     <div class="app mp-shell">
@@ -93,18 +93,22 @@
             <div id="source-type-guide" class="source-type-guide" role="note"></div>
 
             <div id="field-gmail-action" class="gmail-action-panel" hidden>
-              <p class="gmail-action-title" data-i18n="gmailActionTitle">No URL to paste</p>
-              <p class="gmail-action-steps" data-i18n="gmailActionSteps"></p>
-              <p id="gmail-setup-notice" class="gmail-setup-notice" hidden></p>
-              <a
-                id="gmail-setup-link"
-                class="gmail-setup-link"
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                hidden
-                ></a
-              >
+              <p id="gmail-action-ready" class="gmail-ready-block">
+                <span class="gmail-action-title" data-i18n="gmailActionTitle">No URL to paste</span>
+                <span class="gmail-action-steps" data-i18n="gmailActionSteps"></span>
+              </p>
+              <p id="gmail-unavailable-user" class="gmail-unavailable-notice" hidden></p>
+              <details id="gmail-dev-details" class="gmail-dev-details" hidden>
+                <summary data-i18n="gmailDevSummary">Developer setup</summary>
+                <p id="gmail-setup-notice" class="gmail-setup-notice"></p>
+                <a
+                  id="gmail-setup-link"
+                  class="gmail-setup-link"
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </details>
             </div>
 
             <label class="field" id="field-feed-url">
@@ -183,7 +187,7 @@
         </section>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.4.0</div>
+      <div class="mp-version-strip" id="version-strip">v0.4.1</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

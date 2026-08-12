@@ -78,6 +78,9 @@ export const es: Messages = {
   gmailActionSteps:
     'Pulsa “Conectar Gmail” abajo. Google te pedirá iniciar sesión y autorizar acceso de solo lectura a metadatos del correo no leído (remitente, asunto, fecha). Nunca se lee el cuerpo del mensaje.',
   addGmailBtn: 'Conectar Gmail',
+  gmailUnavailableUser:
+    'Gmail aún no está disponible en esta instalación. De momento, prueba RSS, calendario, Hacker News o Reddit.',
+  gmailDevSummary: '¿Desarrollador? Activar OAuth de Gmail',
   gmailSetupNotice:
     'Configuración única (desarrollador): registra OAuth en Google Cloud Console con este ID de extensión: {extId}. Ver GMAIL_OAUTH.md en el repo.',
   gmailSetupLink: 'Guía de configuración (GitHub)',

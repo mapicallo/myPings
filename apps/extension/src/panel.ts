@@ -40,6 +40,9 @@ const feedCategory = document.getElementById('feed-category') as HTMLSelectEleme
 const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectElement;
 const fieldFeedUrl = document.getElementById('field-feed-url')!;
 const fieldGmailAction = document.getElementById('field-gmail-action')!;
+const gmailActionReady = document.getElementById('gmail-action-ready')!;
+const gmailUnavailableUser = document.getElementById('gmail-unavailable-user')!;
+const gmailDevDetails = document.getElementById('gmail-dev-details') as HTMLDetailsElement;
 const gmailSetupNotice = document.getElementById('gmail-setup-notice')!;
 const gmailSetupLink = document.getElementById('gmail-setup-link') as HTMLAnchorElement;
 const fieldGhToken = document.getElementById('field-gh-token')!;
@@ -231,14 +234,23 @@ function syncAddForm(): void {
   fieldFeedUrl.hidden = st === 'gmail';
   fieldGmailAction.hidden = st !== 'gmail';
 
-  if (st === 'gmail' && !gmailReady) {
-    gmailSetupNotice.hidden = false;
-    gmailSetupNotice.textContent = withExtId('gmailSetupNotice');
-    gmailSetupLink.hidden = false;
-    updateGmailSetupLink();
+  if (st === 'gmail') {
+    if (gmailReady) {
+      gmailActionReady.hidden = false;
+      gmailUnavailableUser.hidden = true;
+      gmailDevDetails.hidden = true;
+    } else {
+      gmailActionReady.hidden = true;
+      gmailUnavailableUser.hidden = false;
+      gmailUnavailableUser.textContent = t('gmailUnavailableUser');
+      gmailDevDetails.hidden = false;
+      gmailSetupNotice.textContent = withExtId('gmailSetupNotice');
+      updateGmailSetupLink();
+    }
   } else {
-    gmailSetupNotice.hidden = true;
-    gmailSetupLink.hidden = true;
+    gmailActionReady.hidden = true;
+    gmailUnavailableUser.hidden = true;
+    gmailDevDetails.hidden = true;
   }
 
   sourceTypeGuide.textContent = t(GUIDE_KEYS[st]);

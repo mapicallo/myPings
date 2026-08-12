@@ -78,6 +78,9 @@ export const en: Messages = {
   gmailActionSteps:
     'Tap “Connect Gmail” below. Google will ask you to sign in and grant read-only access to unread mail metadata (sender, subject, date). Email body is never read.',
   addGmailBtn: 'Connect Gmail',
+  gmailUnavailableUser:
+    'Gmail is not available on this install yet. Use RSS, calendar, Hacker News or Reddit for now.',
+  gmailDevSummary: 'Developer? Enable Gmail OAuth',
   gmailSetupNotice:
     'One-time developer setup: register OAuth in Google Cloud Console with this extension ID: {extId}. See GMAIL_OAUTH.md in the repo.',
   gmailSetupLink: 'Setup guide (GitHub)',

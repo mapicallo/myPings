@@ -6,7 +6,7 @@
     <title>My Pings</title>
     <link rel="icon" type="image/png" sizes="48x48" href="./icons/icon48.png" />
     <script type="module" crossorigin src="./assets/panel.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/panel-DJ4NMjTl.css">
+    <link rel="stylesheet" crossorigin href="./assets/panel-CIbTvoUn.css">
   </head>
   <body>
     <div class="app mp-shell">
@@ -31,102 +31,133 @@
         </div>
       </header>
 
+      <nav class="nav-primary" role="tablist" aria-label="Main navigation">
+        <button type="button" class="nav-primary-btn active" data-screen="inbox" role="tab" aria-selected="true" data-i18n="navInbox">
+          My pings
+        </button>
+        <button type="button" class="nav-primary-btn" data-screen="sources" role="tab" aria-selected="false" data-i18n="navSources">
+          Sources
+        </button>
+      </nav>
+
       <main class="mp-scroll">
-        <p class="help" data-i18n="helpOnDemand"></p>
+        <!-- ── INBOX VIEW ── -->
+        <section id="view-inbox" class="view view-active" role="tabpanel">
+          <p class="view-intro" data-i18n="inboxIntro"></p>
 
-        <div class="toolbar">
-          <div class="tabs" role="tablist">
-            <button type="button" class="tab active" data-tab="all" data-i18n="tabAll">All</button>
-            <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
-            <button type="button" class="tab" data-tab="dev" data-i18n="tabDev">Dev</button>
-            <button type="button" class="tab" data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
-            <button type="button" class="tab" data-tab="email" data-i18n="tabEmail">Email</button>
-            <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
+          <div class="inbox-toolbar">
+            <div class="tabs category-tabs" role="tablist" aria-label="Filter by category">
+              <button type="button" class="tab active" data-tab="all" data-i18n="tabAll">All</button>
+              <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
+              <button type="button" class="tab" data-tab="dev" data-i18n="tabDev">Dev</button>
+              <button type="button" class="tab" data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
+              <button type="button" class="tab" data-tab="email" data-i18n="tabEmail">Email</button>
+              <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
+            </div>
+            <button type="button" class="btn secondary btn-block-mobile" id="refresh-btn" data-i18n="refresh">Refresh</button>
           </div>
-          <div class="toolbar-actions">
-            <button type="button" class="btn secondary" id="refresh-btn" data-i18n="refresh">Refresh</button>
-            <button type="button" class="btn primary" id="add-source-btn" data-i18n="addSource">Add source</button>
-          </div>
-        </div>
 
-        <p id="status-line" class="status-line" hidden></p>
-        <p id="form-error" class="error" hidden></p>
+          <p id="status-line" class="status-line" hidden></p>
 
-        <section id="add-panel" class="add-panel" hidden>
-          <h2 class="section-title" data-i18n="addSource">Add source</h2>
-          <label class="field">
-            <span data-i18n="sourceTypeLabel">Source type</span>
-            <select id="source-type">
-              <option value="rss" data-i18n="sourceTypeRss">RSS / Atom</option>
-              <option value="github" data-i18n="sourceTypeGithub">GitHub</option>
-              <option value="ics" data-i18n="sourceTypeIcs">Calendar (ICS)</option>
-              <option value="hn" data-i18n="sourceTypeHn">Hacker News</option>
-              <option value="reddit" data-i18n="sourceTypeReddit">Reddit</option>
-              <option value="gmail" data-i18n="sourceTypeGmail">Gmail</option>
-            </select>
-          </label>
-          <label class="field" id="field-feed-url">
-            <span data-i18n="feedUrlLabel">Feed URL</span>
-            <input
-              id="feed-url"
-              type="url"
-              inputmode="url"
-              autocomplete="off"
-              spellcheck="false"
-              data-i18n-placeholder="feedUrlPlaceholder"
-              placeholder="https://example.com/feed.xml"
-            />
-          </label>
-          <label class="field" id="field-gh-token" hidden>
-            <span data-i18n="ghTokenLabel">Personal access token (optional)</span>
-            <input
-              id="gh-token"
-              type="password"
-              autocomplete="off"
-              data-i18n-placeholder="ghTokenPlaceholder"
-              placeholder="ghp_…"
-            />
-          </label>
-          <label class="field">
-            <span data-i18n="categoryLabel">Category</span>
-            <select id="feed-category">
-              <option value="news" data-i18n="catNews">News</option>
-              <option value="dev" data-i18n="catDev">Dev</option>
-              <option value="calendar" data-i18n="catCalendar">Calendar</option>
-              <option value="email" data-i18n="catEmail">Email</option>
-              <option value="custom" data-i18n="catCustom">Custom</option>
-            </select>
-          </label>
-          <label class="field">
-            <span data-i18n="priorityKeywordsLabel">Priority keywords</span>
-            <input
-              id="priority-keywords"
-              type="text"
-              autocomplete="off"
-              data-i18n-placeholder="priorityKeywordsPlaceholder"
-              placeholder="urgent, invoice, deadline"
-            />
-          </label>
-          <div class="form-actions">
-            <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add</button>
-            <button type="button" class="btn ghost" id="cancel-add-btn" data-i18n="cancel">Cancel</button>
-          </div>
+          <section id="empty-state" class="empty-state" hidden>
+            <p class="empty-title" data-i18n="emptyTitle">No pings yet</p>
+            <p class="empty-hint" data-i18n="emptyHint"></p>
+            <button type="button" class="btn primary" id="empty-go-sources" data-i18n="emptyGoSources"></button>
+          </section>
+
+          <ul id="ping-list" class="ping-list"></ul>
         </section>
 
-        <section id="sources-panel" class="sources-panel">
-          <h2 class="section-title" data-i18n="sourcesTitle">Your RSS sources</h2>
-          <ul id="sources-list" class="sources-list"></ul>
-        </section>
+        <!-- ── SOURCES VIEW ── -->
+        <section id="view-sources" class="view" role="tabpanel" hidden>
+          <div class="pedagogy-card">
+            <h2 class="pedagogy-title" data-i18n="sourcesIntroTitle">Connect your alerts</h2>
+            <p class="pedagogy-body" data-i18n="sourcesIntroBody"></p>
+          </div>
 
-        <section id="empty-state" class="empty-state" hidden>
-          <p class="empty-title" data-i18n="emptyTitle">No pings yet</p>
-          <p class="empty-hint" data-i18n="emptyHint"></p>
-        </section>
+          <section class="add-panel">
+            <h2 class="section-title" data-i18n="addSource">Add source</h2>
 
-        <ul id="ping-list" class="ping-list"></ul>
+            <label class="field">
+              <span data-i18n="sourceTypeLabel">Source type</span>
+              <select id="source-type">
+                <option value="rss" data-i18n="sourceTypeRss">RSS / Atom</option>
+                <option value="github" data-i18n="sourceTypeGithub">GitHub</option>
+                <option value="ics" data-i18n="sourceTypeIcs">Calendar (ICS)</option>
+                <option value="hn" data-i18n="sourceTypeHn">Hacker News</option>
+                <option value="reddit" data-i18n="sourceTypeReddit">Reddit</option>
+                <option value="gmail" data-i18n="sourceTypeGmail">Gmail</option>
+              </select>
+            </label>
+
+            <div id="source-type-guide" class="source-type-guide" role="note"></div>
+
+            <label class="field" id="field-feed-url">
+              <span id="feed-url-label" data-i18n="feedUrlLabel">URL / identifier</span>
+              <input
+                id="feed-url"
+                type="url"
+                inputmode="url"
+                autocomplete="off"
+                spellcheck="false"
+                data-i18n-placeholder="feedUrlPlaceholder"
+                placeholder="https://example.com/feed.xml"
+              />
+              <span id="field-url-hint" class="field-hint"></span>
+            </label>
+
+            <label class="field" id="field-gh-token" hidden>
+              <span data-i18n="ghTokenLabel">Personal access token (optional)</span>
+              <input
+                id="gh-token"
+                type="password"
+                autocomplete="off"
+                data-i18n-placeholder="ghTokenPlaceholder"
+                placeholder="ghp_…"
+              />
+              <span class="field-hint" data-i18n="fieldGhTokenHint"></span>
+            </label>
+
+            <label class="field">
+              <span data-i18n="categoryLabel">Category</span>
+              <select id="feed-category">
+                <option value="news" data-i18n="catNews">News</option>
+                <option value="dev" data-i18n="catDev">Dev</option>
+                <option value="calendar" data-i18n="catCalendar">Calendar</option>
+                <option value="email" data-i18n="catEmail">Email</option>
+                <option value="custom" data-i18n="catCustom">Custom</option>
+              </select>
+              <span class="field-hint" data-i18n="categoryHint"></span>
+            </label>
+
+            <label class="field">
+              <span data-i18n="priorityKeywordsLabel">Priority keywords</span>
+              <input
+                id="priority-keywords"
+                type="text"
+                autocomplete="off"
+                data-i18n-placeholder="priorityKeywordsPlaceholder"
+                placeholder="urgent, invoice, deadline"
+              />
+              <span class="field-hint" data-i18n="priorityHint"></span>
+            </label>
+
+            <p id="form-error" class="error" hidden></p>
+
+            <div class="form-actions">
+              <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add</button>
+            </div>
+          </section>
+
+          <section id="sources-panel" class="sources-panel">
+            <h2 class="section-title" data-i18n="sourcesTitle">Your sources</h2>
+            <p class="sources-manage-hint" data-i18n="sourcesManageHint"></p>
+            <ul id="sources-list" class="sources-list"></ul>
+          </section>
+        </section>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.3.0</div>
+      <div class="mp-version-strip" id="version-strip">v0.3.1</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

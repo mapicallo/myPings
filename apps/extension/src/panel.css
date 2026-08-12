@@ -119,6 +119,125 @@ body {
   flex: 1;
   overflow: auto;
   padding: 14px 16px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Primary navigation (two screens) ── */
+.nav-primary {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0;
+  padding: 10px 16px 0;
+  background: var(--bg-elev);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-primary-btn {
+  flex: 1;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.nav-primary-btn:hover {
+  color: var(--ink);
+}
+
+.nav-primary-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Views ── */
+.view {
+  display: none;
+}
+
+.view.view-active {
+  display: block;
+}
+
+.view-intro {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.inbox-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.category-tabs {
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.btn-block-mobile {
+  flex-shrink: 0;
+}
+
+/* ── Pedagogy ── */
+.pedagogy-card {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.pedagogy-title {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.pedagogy-body {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.source-type-guide {
+  margin: -4px 0 12px;
+  padding: 10px 12px;
+  background: #f0f4ff;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.source-type-guide:empty {
+  display: none;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.sources-manage-hint {
+  margin: -6px 0 10px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.4;
 }
 
 .help {
@@ -256,12 +375,61 @@ body {
 
 .sources-list li {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px solid var(--line);
   font-size: 0.85rem;
+}
+
+.source-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--line);
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+.badge.muted {
+  background: #f1f3f5;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.empty-state .btn {
+  margin-top: 14px;
+}
+
+@media (max-width: 480px) {
+  .nav-primary-btn {
+    font-size: 0.85rem;
+    padding: 10px 8px;
+  }
+
+  .inbox-toolbar {
+    flex-direction: column;
+  }
+
+  .btn-block-mobile {
+    width: 100%;
+  }
+
+  .category-tabs {
+    width: 100%;
+  }
 }
 
 .sources-list li:last-child {
@@ -274,9 +442,8 @@ body {
 
 .source-title {
   font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .source-url {
@@ -285,6 +452,7 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-top: 2px;
 }
 
 .empty-state {

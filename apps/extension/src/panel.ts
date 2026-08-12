@@ -4,6 +4,7 @@ import {
   setLocale,
   t,
   type Locale,
+  type MessageKey,
 } from './lib/i18n/index.js';
 import { connectGmail } from './lib/gmail.js';
 import { hnTitleFromInput } from './lib/hn.js';
@@ -25,12 +26,13 @@ import {
 } from './lib/storage.js';
 import { APP_VERSION, type PingCategory, type PingItem, type PingSource, type SourceType } from './lib/types.js';
 
+type Screen = 'inbox' | 'sources';
+
 const localeSelect = document.getElementById('locale-select') as HTMLSelectElement;
+const viewInbox = document.getElementById('view-inbox')!;
+const viewSources = document.getElementById('view-sources')!;
 const refreshBtn = document.getElementById('refresh-btn') as HTMLButtonElement;
-const addSourceBtn = document.getElementById('add-source-btn') as HTMLButtonElement;
-const addPanel = document.getElementById('add-panel')!;
 const confirmAddBtn = document.getElementById('confirm-add-btn') as HTMLButtonElement;
-const cancelAddBtn = document.getElementById('cancel-add-btn') as HTMLButtonElement;
 const feedUrlInput = document.getElementById('feed-url') as HTMLInputElement;
 const feedCategory = document.getElementById('feed-category') as HTMLSelectElement;
 const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectElement;
@@ -38,17 +40,38 @@ const fieldFeedUrl = document.getElementById('field-feed-url')!;
 const fieldGhToken = document.getElementById('field-gh-token')!;
 const ghTokenInput = document.getElementById('gh-token') as HTMLInputElement;
 const priorityKeywordsInput = document.getElementById('priority-keywords') as HTMLInputElement;
+const sourceTypeGuide = document.getElementById('source-type-guide')!;
+const fieldUrlHint = document.getElementById('field-url-hint')!;
 const formError = document.getElementById('form-error')!;
 const statusLine = document.getElementById('status-line')!;
 const sourcesList = document.getElementById('sources-list')!;
 const pingList = document.getElementById('ping-list')!;
 const emptyState = document.getElementById('empty-state')!;
+const emptyGoSources = document.getElementById('empty-go-sources') as HTMLButtonElement;
 const versionStrip = document.getElementById('version-strip')!;
 const privacyLink = document.getElementById('privacy-link') as HTMLAnchorElement;
+
+const GUIDE_KEYS: Record<SourceType, MessageKey> = {
+  rss: 'sourceGuideRss',
+  github: 'sourceGuideGithub',
+  ics: 'sourceGuideIcs',
+  hn: 'sourceGuideHn',
+  reddit: 'sourceGuideReddit',
+  gmail: 'sourceGuideGmail',
+};
+
+const URL_HINT_KEYS: Partial<Record<SourceType, MessageKey>> = {
+  rss: 'fieldUrlHintRss',
+  github: 'fieldUrlHintGithub',
+  ics: 'fieldUrlHintIcs',
+  hn: 'fieldUrlHintHn',
+  reddit: 'fieldUrlHintReddit',
+};
 
 let sources: PingSource[] = [];
 let pings: PingItem[] = [];
 let activeTab: PingCategory = 'all';
+let activeScreen: Screen = 'inbox';
 let busy = false;
 
 function showError(msg: string): void {
@@ -91,6 +114,22 @@ function visiblePings(): PingItem[] {
   return sortWithPriority(filtered, sources);
 }
 
+function setScreen(screen: Screen): void {
+  activeScreen = screen;
+  viewInbox.classList.toggle('view-active', screen === 'inbox');
+  viewInbox.hidden = screen !== 'inbox';
+  viewSources.classList.toggle('view-active', screen === 'sources');
+  viewSources.hidden = screen !== 'sources';
+
+  document.querySelectorAll<HTMLButtonElement>('.nav-primary-btn').forEach((btn) => {
+    const isActive = btn.dataset.screen === screen;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  if (screen === 'sources') clearError();
+}
+
 function renderSources(): void {
   if (!sources.length) {
     sourcesList.innerHTML = `<li class="muted">${t('noSources')}</li>`;
@@ -103,7 +142,7 @@ function renderSources(): void {
         ? `<span class="badge muted">${t('silencedUntil')} ${new Date(s.silencedUntil!).toLocaleTimeString()}</span>`
         : '';
       const kwBadge = s.priorityKeywords?.length
-        ? `<span class="badge">⚡ ${s.priorityKeywords.join(', ')}</span>`
+        ? `<span class="badge">⚡ ${escapeHtml(s.priorityKeywords.join(', '))}</span>`
         : '';
       const silenceBtn = silenced
         ? `<button type="button" class="btn tiny ghost" data-action="unsilence">${t('unsilenceSource')}</button>`
@@ -154,9 +193,39 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+function syncAddForm(): void {
+  const st = sourceTypeSelect.value as SourceType;
+  fieldGhToken.hidden = st !== 'github';
+  fieldFeedUrl.hidden = st === 'gmail';
+
+  sourceTypeGuide.textContent = t(GUIDE_KEYS[st]);
+  const hintKey = URL_HINT_KEYS[st];
+  fieldUrlHint.textContent = hintKey ? t(hintKey) : '';
+
+  if (st === 'github') {
+    feedUrlInput.placeholder = t('ghUrlPlaceholder');
+    feedCategory.value = 'dev';
+  } else if (st === 'ics') {
+    feedUrlInput.placeholder = t('icsUrlPlaceholder');
+    feedCategory.value = 'calendar';
+  } else if (st === 'hn') {
+    feedUrlInput.placeholder = t('hnUrlPlaceholder');
+    if (!feedUrlInput.value) feedUrlInput.value = 'front_page';
+    feedCategory.value = 'news';
+  } else if (st === 'reddit') {
+    feedUrlInput.placeholder = t('redditUrlPlaceholder');
+    feedCategory.value = 'news';
+  } else if (st === 'gmail') {
+    feedCategory.value = 'email';
+  } else {
+    feedUrlInput.placeholder = t('feedUrlPlaceholder');
+  }
+}
+
 function renderAll(): void {
   renderSources();
   renderPings();
+  syncAddForm();
   applyStaticTranslations();
   versionStrip.textContent = `v${APP_VERSION}`;
 }
@@ -170,7 +239,10 @@ async function reloadState(): Promise<void> {
 async function refreshAll(): Promise<void> {
   if (busy) return;
   clearError();
-  if (!sources.length) { setStatus(t('noSources')); return; }
+  if (!sources.length) {
+    setScreen('sources');
+    return;
+  }
   busy = true;
   refreshBtn.disabled = true;
   refreshBtn.textContent = t('refreshing');
@@ -199,31 +271,6 @@ async function refreshAll(): Promise<void> {
   }
 }
 
-function syncAddForm(): void {
-  const st = sourceTypeSelect.value as SourceType;
-  fieldGhToken.hidden = st !== 'github';
-  fieldFeedUrl.hidden = st === 'gmail';
-
-  if (st === 'github') {
-    feedUrlInput.placeholder = t('ghUrlPlaceholder');
-    feedCategory.value = 'dev';
-  } else if (st === 'ics') {
-    feedUrlInput.placeholder = t('icsUrlPlaceholder');
-    feedCategory.value = 'calendar';
-  } else if (st === 'hn') {
-    feedUrlInput.placeholder = t('hnUrlPlaceholder');
-    feedUrlInput.value = feedUrlInput.value || 'front_page';
-    feedCategory.value = 'news';
-  } else if (st === 'reddit') {
-    feedUrlInput.placeholder = t('redditUrlPlaceholder');
-    feedCategory.value = 'news';
-  } else if (st === 'gmail') {
-    feedCategory.value = 'email';
-  } else {
-    feedUrlInput.placeholder = t('feedUrlPlaceholder');
-  }
-}
-
 async function addFeed(): Promise<void> {
   clearError();
   const st = sourceTypeSelect.value as SourceType;
@@ -247,7 +294,7 @@ async function addFeed(): Promise<void> {
     } else if (st === 'github') {
       source = {
         id: newId(), type: 'github', url, title: ghTitleFromUrl(url),
-        category: category === 'all' ? 'dev' : category,
+        category,
         createdAt: new Date().toISOString(),
         token: ghTokenInput.value.trim() || undefined,
         ghEvents: ['issues', 'pulls', 'releases', 'mentions'],
@@ -259,7 +306,7 @@ async function addFeed(): Promise<void> {
       if (!ok) { showError(t('errorPermission')); return; }
       source = {
         id: newId(), type: 'ics', url, title: icsTitleFromUrl(url),
-        category: category === 'all' ? 'calendar' : category,
+        category,
         createdAt: new Date().toISOString(),
         priorityKeywords,
       };
@@ -270,7 +317,7 @@ async function addFeed(): Promise<void> {
       if (!ok) { showError(t('errorPermission')); return; }
       source = {
         id: newId(), type: 'hn', url: tag, title: hnTitleFromInput(tag),
-        category: category === 'all' ? 'news' : category,
+        category,
         createdAt: new Date().toISOString(),
         priorityKeywords,
       };
@@ -280,7 +327,7 @@ async function addFeed(): Promise<void> {
       if (!ok) { showError(t('errorPermission')); return; }
       source = {
         id: newId(), type: 'reddit', url, title: redditTitleFromInput(url),
-        category: category === 'all' ? 'news' : category,
+        category,
         createdAt: new Date().toISOString(),
         priorityKeywords,
       };
@@ -312,8 +359,8 @@ async function addFeed(): Promise<void> {
     feedUrlInput.value = '';
     ghTokenInput.value = '';
     priorityKeywordsInput.value = '';
-    addPanel.hidden = true;
-    setStatus(t('addedOk'));
+    setStatus(t('addedGoInbox'));
+    setScreen('inbox');
     renderAll();
   } catch (e) {
     console.warn('[My Pings] add source', e);
@@ -336,13 +383,22 @@ function icsTitleFromUrl(url: string): string {
   try { return new URL(url).hostname; } catch { return 'Calendar'; }
 }
 
-function bindTabs(): void {
-  document.querySelectorAll<HTMLButtonElement>('.tab').forEach((btn) => {
+function bindCategoryTabs(): void {
+  document.querySelectorAll<HTMLButtonElement>('.category-tabs .tab').forEach((btn) => {
     btn.addEventListener('click', () => {
       activeTab = (btn.dataset.tab || 'all') as PingCategory;
-      document.querySelectorAll('.tab').forEach((b) => b.classList.remove('active'));
+      document.querySelectorAll('.category-tabs .tab').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       renderPings();
+    });
+  });
+}
+
+function bindPrimaryNav(): void {
+  document.querySelectorAll<HTMLButtonElement>('.nav-primary-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const screen = (btn.dataset.screen || 'inbox') as Screen;
+      setScreen(screen);
     });
   });
 }
@@ -390,10 +446,9 @@ pingList.addEventListener('click', (ev) => {
 });
 
 refreshBtn.addEventListener('click', () => void refreshAll());
-addSourceBtn.addEventListener('click', () => { addPanel.hidden = !addPanel.hidden; clearError(); syncAddForm(); });
-cancelAddBtn.addEventListener('click', () => { addPanel.hidden = true; clearError(); });
 confirmAddBtn.addEventListener('click', () => void addFeed());
 sourceTypeSelect.addEventListener('change', syncAddForm);
+emptyGoSources.addEventListener('click', () => setScreen('sources'));
 
 localeSelect.addEventListener('change', () => {
   void setLocale(localeSelect.value as Locale).then(() => renderAll());
@@ -404,11 +459,13 @@ privacyLink.addEventListener('click', (e) => {
   window.open(chrome.runtime.getURL('privacy.html'), '_blank', 'noopener,noreferrer');
 });
 
-bindTabs();
+bindCategoryTabs();
+bindPrimaryNav();
 
 void (async () => {
   const locale = await initI18n();
   localeSelect.value = locale;
+  setScreen('inbox');
   applyStaticTranslations();
   versionStrip.textContent = `v${APP_VERSION}`;
   await reloadState();

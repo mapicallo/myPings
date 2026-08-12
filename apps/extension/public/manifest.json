@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "My Pings",
-  "version": "0.2.0",
-  "description": "My Pings — all your chosen alerts in one list. RSS feeds you follow. On demand.",
+  "version": "0.3.0",
+  "description": "My Pings — all your chosen alerts in one list. RSS, GitHub, HN, Reddit, Gmail & more. On demand.",
   "action": {
     "default_title": "My Pings",
     "default_icon": {
@@ -15,8 +15,13 @@
     "service_worker": "assets/background.js",
     "type": "module"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "identity"],
+  "oauth2": {
+    "client_id": "REPLACE_WITH_OAUTH_CLIENT_ID.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/gmail.metadata"]
+  },
   "optional_host_permissions": ["https://*/*", "http://*/*"],
+  "host_permissions": ["https://www.googleapis.com/*"],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

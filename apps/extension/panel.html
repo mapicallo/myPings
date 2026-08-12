@@ -39,6 +39,7 @@
             <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
             <button type="button" class="tab" data-tab="dev" data-i18n="tabDev">Dev</button>
             <button type="button" class="tab" data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
+            <button type="button" class="tab" data-tab="email" data-i18n="tabEmail">Email</button>
             <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
           </div>
           <div class="toolbar-actions">
@@ -58,6 +59,9 @@
               <option value="rss" data-i18n="sourceTypeRss">RSS / Atom</option>
               <option value="github" data-i18n="sourceTypeGithub">GitHub</option>
               <option value="ics" data-i18n="sourceTypeIcs">Calendar (ICS)</option>
+              <option value="hn" data-i18n="sourceTypeHn">Hacker News</option>
+              <option value="reddit" data-i18n="sourceTypeReddit">Reddit</option>
+              <option value="gmail" data-i18n="sourceTypeGmail">Gmail</option>
             </select>
           </label>
           <label class="field" id="field-feed-url">
@@ -88,8 +92,19 @@
               <option value="news" data-i18n="catNews">News</option>
               <option value="dev" data-i18n="catDev">Dev</option>
               <option value="calendar" data-i18n="catCalendar">Calendar</option>
+              <option value="email" data-i18n="catEmail">Email</option>
               <option value="custom" data-i18n="catCustom">Custom</option>
             </select>
+          </label>
+          <label class="field">
+            <span data-i18n="priorityKeywordsLabel">Priority keywords</span>
+            <input
+              id="priority-keywords"
+              type="text"
+              autocomplete="off"
+              data-i18n-placeholder="priorityKeywordsPlaceholder"
+              placeholder="urgent, invoice, deadline"
+            />
           </label>
           <div class="form-actions">
             <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add</button>
@@ -110,7 +125,7 @@
         <ul id="ping-list" class="ping-list"></ul>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.2.0</div>
+      <div class="mp-version-strip" id="version-strip">v0.3.0</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

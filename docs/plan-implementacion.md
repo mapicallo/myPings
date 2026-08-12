@@ -1,14 +1,14 @@
 # My Pings — Plan de implementación
 
 **Fecha:** 2026-08-12  
-**Estado:** **v0.2.0** — Fase 2 hecha (GitHub + calendario ICS + tabs Dev/Calendar + silenciar fuente). Siguiente: Fase 3 (correo metadatos / HN)  
+**Estado:** **v0.3.0** — Fase 3 hecha (Gmail metadata + HN + Reddit + prioridad). Siguiente: Fase 4 (CWS polish)  
 **Nombre CWS:** **My Pings**  
 **Tagline:** *All your chosen alerts in one list*  
 **ES (UI):** *Tus avisos elegidos, en una sola lista*  
 **Repo:** https://github.com/mapicallo/myPings  
 **Workspace:** `C:\code-myPings\`  
 **Load unpacked:** `apps/extension/dist`  
-**ZIP:** `apps/extension/releases/MyPings-v0.2.0.zip`  
+**ZIP:** `apps/extension/releases/MyPings-v0.3.0.zip`  
 **Familia:** utilidad AI4Context (productividad / menos ruido)  
 **Referencias UX:** AccessPortal / LocalChat / Is this site safe (panel flotante, i18n, packing CWS)
 
@@ -172,11 +172,13 @@ chrome.storage / IndexedDB (local)
 - Filtros por tipo en tabs (Dev, Calendar)  
 - Silenciar fuente (1h / 8h / 24h)  
 
-### Fase 3 — Correo metadatos + HN/Reddit (v0.3.0)
+### Fase 3 — Correo metadatos + HN/Reddit (v0.3.0) ✅
 
-- Gmail o Outlook: solo from/subject/date/link  
-- HN y/o Reddit (subreddits elegidos)  
-- Reglas simples de prioridad (opcional)
+- Gmail: metadata (from/subject/date) vía OAuth + `gmail.metadata`  
+- HN: Algolia API (front_page, newest, show_hn, ask_hn)  
+- Reddit: subreddits vía JSON API  
+- Reglas simples de prioridad por keywords  
+- Tab Email  
 
 ### Fase 4 — Publisher CWS + polish tienda (v0.4.0)
 

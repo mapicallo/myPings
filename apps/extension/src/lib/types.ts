@@ -1,6 +1,6 @@
-export type PingCategory = 'all' | 'news' | 'dev' | 'calendar' | 'custom';
+export type PingCategory = 'all' | 'news' | 'dev' | 'calendar' | 'email' | 'custom';
 
-export type SourceType = 'rss' | 'github' | 'ics';
+export type SourceType = 'rss' | 'github' | 'ics' | 'hn' | 'reddit' | 'gmail';
 
 export type PingSource = {
   id: string;
@@ -13,6 +13,8 @@ export type PingSource = {
   token?: string;
   /** GitHub: event types to include. */
   ghEvents?: GithubEventFilter[];
+  /** Keywords that mark matching pings as high priority. */
+  priorityKeywords?: string[];
   /** ISO timestamp — source silenced until this time (null = active). */
   silencedUntil?: string | null;
 };
@@ -31,4 +33,4 @@ export type PingItem = {
   read: boolean;
 };
 
-export const APP_VERSION = '0.2.0';
+export const APP_VERSION = '0.3.0';

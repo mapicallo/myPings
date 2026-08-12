@@ -5,13 +5,12 @@ import {
   t,
   type Locale,
 } from './lib/i18n/index.js';
-import {
-  ensureFeedPermission,
-  probeAndBuildSource,
-  refreshSource,
-} from './lib/rss.js';
-import { refreshGithub } from './lib/github.js';
-import { refreshIcs } from './lib/ics.js';
+import { connectGmail } from './lib/gmail.js';
+import { hnTitleFromInput } from './lib/hn.js';
+import { isHighPriority, sortWithPriority } from './lib/priority.js';
+import { errorKeyForType, PermissionError, refreshPingSource } from './lib/refresh.js';
+import { redditTitleFromInput } from './lib/reddit.js';
+import { ensureFeedPermission, probeAndBuildSource } from './lib/rss.js';
 import {
   isSourceSilenced,
   loadPings,
@@ -38,6 +37,7 @@ const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectEle
 const fieldFeedUrl = document.getElementById('field-feed-url')!;
 const fieldGhToken = document.getElementById('field-gh-token')!;
 const ghTokenInput = document.getElementById('gh-token') as HTMLInputElement;
+const priorityKeywordsInput = document.getElementById('priority-keywords') as HTMLInputElement;
 const formError = document.getElementById('form-error')!;
 const statusLine = document.getElementById('status-line')!;
 const sourcesList = document.getElementById('sources-list')!;
@@ -81,13 +81,14 @@ function relativeTime(iso: string | null): string {
   return `${d}d`;
 }
 
+function parseKeywords(raw: string): string[] | undefined {
+  const list = raw.split(',').map((k) => k.trim()).filter(Boolean);
+  return list.length ? list : undefined;
+}
+
 function visiblePings(): PingItem[] {
   const filtered = activeTab === 'all' ? pings : pings.filter((p) => p.category === activeTab);
-  return filtered.slice().sort((a, b) => {
-    const ta = a.publishedAt || a.receivedAt;
-    const tb = b.publishedAt || b.receivedAt;
-    return ta < tb ? 1 : -1;
-  });
+  return sortWithPriority(filtered, sources);
 }
 
 function renderSources(): void {
@@ -101,6 +102,9 @@ function renderSources(): void {
       const silenceBadge = silenced
         ? `<span class="badge muted">${t('silencedUntil')} ${new Date(s.silencedUntil!).toLocaleTimeString()}</span>`
         : '';
+      const kwBadge = s.priorityKeywords?.length
+        ? `<span class="badge">⚡ ${s.priorityKeywords.join(', ')}</span>`
+        : '';
       const silenceBtn = silenced
         ? `<button type="button" class="btn tiny ghost" data-action="unsilence">${t('unsilenceSource')}</button>`
         : `<button type="button" class="btn tiny ghost" data-action="silence" data-hours="1">${t('silence1h')}</button>
@@ -109,8 +113,8 @@ function renderSources(): void {
       return `
       <li data-source-id="${s.id}">
         <div class="source-meta">
-          <div class="source-title">${escapeHtml(s.title)} <span class="badge">${s.type}</span> ${silenceBadge}</div>
-          <div class="source-url">${escapeHtml(s.url)}</div>
+          <div class="source-title">${escapeHtml(s.title)} <span class="badge">${s.type}</span> ${kwBadge} ${silenceBadge}</div>
+          <div class="source-url">${escapeHtml(s.url || s.type)}</div>
         </div>
         <div class="source-actions">
           ${silenceBtn}
@@ -129,11 +133,12 @@ function renderPings(): void {
   pingList.innerHTML = list
     .map((p) => {
       const when = relativeTime(p.publishedAt || p.receivedAt);
+      const pri = isHighPriority(p, sources) ? ` · ${t('priorityBadge')}` : '';
       return `
-      <li class="${p.read ? 'read' : ''}" data-ping-id="${p.id}">
+      <li class="${p.read ? 'read' : ''}${isHighPriority(p, sources) ? ' priority' : ''}" data-ping-id="${p.id}">
         <div class="ping-top">
           <span>${escapeHtml(p.sourceTitle)} · ${escapeHtml(p.category)}</span>
-          <span>${escapeHtml(when)}${p.read ? '' : ` · ${t('unreadBadge')}`}</span>
+          <span>${escapeHtml(when)}${p.read ? '' : ` · ${t('unreadBadge')}`}${pri}</span>
         </div>
         <p class="ping-title">${escapeHtml(p.title)}</p>
         <div class="ping-actions">
@@ -174,21 +179,14 @@ async function refreshAll(): Promise<void> {
     for (const source of sources) {
       if (isSourceSilenced(source)) continue;
       try {
-        if (source.type === 'rss') {
-          const ok = await ensureFeedPermission(source.url);
-          if (!ok) { showError(t('errorPermission')); continue; }
-          batches.push(...await refreshSource(source));
-        } else if (source.type === 'github') {
-          batches.push(...await refreshGithub(source));
-        } else if (source.type === 'ics') {
-          const ok = await ensureFeedPermission(source.url);
-          if (!ok) { showError(t('errorPermission')); continue; }
-          batches.push(...await refreshIcs(source));
-        }
+        batches.push(...await refreshPingSource(source));
       } catch (e) {
         console.warn('[My Pings] refresh source', source.url, e);
-        const errKey = source.type === 'github' ? 'errorGithub' : source.type === 'ics' ? 'errorIcs' : 'errorFeed';
-        showError(`${t(errKey)} (${source.title})`);
+        if (e instanceof PermissionError) {
+          showError(t('errorPermission'));
+        } else {
+          showError(`${t(errorKeyForType(source.type))} (${source.title})`);
+        }
       }
     }
     if (batches.length) pings = await mergePings(batches);
@@ -204,12 +202,23 @@ async function refreshAll(): Promise<void> {
 function syncAddForm(): void {
   const st = sourceTypeSelect.value as SourceType;
   fieldGhToken.hidden = st !== 'github';
+  fieldFeedUrl.hidden = st === 'gmail';
+
   if (st === 'github') {
     feedUrlInput.placeholder = t('ghUrlPlaceholder');
     feedCategory.value = 'dev';
   } else if (st === 'ics') {
     feedUrlInput.placeholder = t('icsUrlPlaceholder');
     feedCategory.value = 'calendar';
+  } else if (st === 'hn') {
+    feedUrlInput.placeholder = t('hnUrlPlaceholder');
+    feedUrlInput.value = feedUrlInput.value || 'front_page';
+    feedCategory.value = 'news';
+  } else if (st === 'reddit') {
+    feedUrlInput.placeholder = t('redditUrlPlaceholder');
+    feedCategory.value = 'news';
+  } else if (st === 'gmail') {
+    feedCategory.value = 'email';
   } else {
     feedUrlInput.placeholder = t('feedUrlPlaceholder');
   }
@@ -217,49 +226,92 @@ function syncAddForm(): void {
 
 async function addFeed(): Promise<void> {
   clearError();
-  const url = feedUrlInput.value.trim();
-  if (!url) { showError(t('errorFeed')); return; }
   const st = sourceTypeSelect.value as SourceType;
+  const url = feedUrlInput.value.trim();
   const category = feedCategory.value as PingSource['category'];
+  const priorityKeywords = parseKeywords(priorityKeywordsInput.value);
+
+  if (st !== 'gmail' && !url) { showError(t('errorFeed')); return; }
+
   confirmAddBtn.disabled = true;
   try {
+    let source: PingSource;
+    let fresh: PingItem[] = [];
+
     if (st === 'rss') {
       const ok = await ensureFeedPermission(url);
       if (!ok) { showError(t('errorPermission')); return; }
-      const { source, pings: fresh } = await probeAndBuildSource(url, category);
-      if (sources.some((s) => s.url === source.url)) { showError(t('errorFeed')); return; }
-      sources = [...sources, source];
-      await saveSources(sources);
-      pings = await mergePings(fresh);
+      const built = await probeAndBuildSource(url, category);
+      source = { ...built.source, priorityKeywords };
+      fresh = built.pings;
     } else if (st === 'github') {
-      const source: PingSource = {
+      source = {
         id: newId(), type: 'github', url, title: ghTitleFromUrl(url),
         category: category === 'all' ? 'dev' : category,
         createdAt: new Date().toISOString(),
         token: ghTokenInput.value.trim() || undefined,
         ghEvents: ['issues', 'pulls', 'releases', 'mentions'],
+        priorityKeywords,
       };
-      if (sources.some((s) => s.url === source.url)) { showError(t('errorGithub')); return; }
-      const fresh = await refreshGithub(source);
-      sources = [...sources, source];
-      await saveSources(sources);
-      pings = await mergePings(fresh);
+      fresh = await refreshPingSource(source);
     } else if (st === 'ics') {
       const ok = await ensureFeedPermission(url);
       if (!ok) { showError(t('errorPermission')); return; }
-      const source: PingSource = {
+      source = {
         id: newId(), type: 'ics', url, title: icsTitleFromUrl(url),
         category: category === 'all' ? 'calendar' : category,
         createdAt: new Date().toISOString(),
+        priorityKeywords,
       };
-      if (sources.some((s) => s.url === source.url)) { showError(t('errorIcs')); return; }
-      const fresh = await refreshIcs(source);
-      sources = [...sources, source];
-      await saveSources(sources);
-      pings = await mergePings(fresh);
+      fresh = await refreshPingSource(source);
+    } else if (st === 'hn') {
+      const tag = url || 'front_page';
+      const ok = await ensureFeedPermission('https://hn.algolia.com/');
+      if (!ok) { showError(t('errorPermission')); return; }
+      source = {
+        id: newId(), type: 'hn', url: tag, title: hnTitleFromInput(tag),
+        category: category === 'all' ? 'news' : category,
+        createdAt: new Date().toISOString(),
+        priorityKeywords,
+      };
+      fresh = await refreshPingSource(source);
+    } else if (st === 'reddit') {
+      const ok = await ensureFeedPermission('https://www.reddit.com/');
+      if (!ok) { showError(t('errorPermission')); return; }
+      source = {
+        id: newId(), type: 'reddit', url, title: redditTitleFromInput(url),
+        category: category === 'all' ? 'news' : category,
+        createdAt: new Date().toISOString(),
+        priorityKeywords,
+      };
+      fresh = await refreshPingSource(source);
+    } else if (st === 'gmail') {
+      await connectGmail();
+      source = {
+        id: newId(), type: 'gmail', url: 'gmail', title: 'Gmail',
+        category: 'email',
+        createdAt: new Date().toISOString(),
+        priorityKeywords,
+      };
+      if (sources.some((s) => s.type === 'gmail')) { showError(t('errorGmail')); return; }
+      fresh = await refreshPingSource(source);
+    } else {
+      showError(t('errorGeneric'));
+      return;
     }
+
+    const dedupeKey = source.type === 'gmail' ? 'gmail' : source.url;
+    if (sources.some((s) => (s.type === 'gmail' ? 'gmail' : s.url) === dedupeKey)) {
+      showError(t(errorKeyForType(source.type)));
+      return;
+    }
+
+    sources = [...sources, source];
+    await saveSources(sources);
+    pings = await mergePings(fresh);
     feedUrlInput.value = '';
     ghTokenInput.value = '';
+    priorityKeywordsInput.value = '';
     addPanel.hidden = true;
     setStatus(t('addedOk'));
     renderAll();

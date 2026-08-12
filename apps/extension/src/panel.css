@@ -163,6 +163,10 @@ body {
   display: block;
 }
 
+.view[hidden] {
+  display: none !important;
+}
+
 .view-intro {
   margin: 0 0 14px;
   font-size: 0.85rem;
@@ -358,6 +362,10 @@ body {
   border: 1px solid var(--line);
   border-radius: 6px;
   font-size: 0.9rem;
+}
+
+.field[hidden] {
+  display: none !important;
 }
 
 .form-actions {

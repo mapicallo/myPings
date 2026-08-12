@@ -1,14 +1,14 @@
 # My Pings — Plan de implementación
 
 **Fecha:** 2026-08-12  
-**Estado:** **v0.1.0** — Fase 0+1 hechas (scaffold + embudo RSS). Siguiente: Fase 2 (GitHub + calendario)  
+**Estado:** **v0.2.0** — Fase 2 hecha (GitHub + calendario ICS + tabs Dev/Calendar + silenciar fuente). Siguiente: Fase 3 (correo metadatos / HN)  
 **Nombre CWS:** **My Pings**  
 **Tagline:** *All your chosen alerts in one list*  
 **ES (UI):** *Tus avisos elegidos, en una sola lista*  
 **Repo:** https://github.com/mapicallo/myPings  
 **Workspace:** `C:\code-myPings\`  
 **Load unpacked:** `apps/extension/dist`  
-**ZIP:** `apps/extension/releases/MyPings-v0.1.0.zip`  
+**ZIP:** `apps/extension/releases/MyPings-v0.2.0.zip`  
 **Familia:** utilidad AI4Context (productividad / menos ruido)  
 **Referencias UX:** AccessPortal / LocalChat / Is this site safe (panel flotante, i18n, packing CWS)
 
@@ -165,12 +165,12 @@ chrome.storage / IndexedDB (local)
 
 **Criterio done:** feeds reales → lista usable en scroll. ✅
 
-### Fase 2 — GitHub + Calendario (v0.2.0)
+### Fase 2 — GitHub + Calendario (v0.2.0) ✅
 
 - GitHub: issues/PR/releases configurables  
-- Calendar: ICS y/o Google OAuth  
-- Filtros por tipo en tabs  
-- Silenciar fuente  
+- Calendar: ICS (URL pública)  
+- Filtros por tipo en tabs (Dev, Calendar)  
+- Silenciar fuente (1h / 8h / 24h)  
 
 ### Fase 3 — Correo metadatos + HN/Reddit (v0.3.0)
 

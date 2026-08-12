@@ -37,6 +37,8 @@
           <div class="tabs" role="tablist">
             <button type="button" class="tab active" data-tab="all" data-i18n="tabAll">All</button>
             <button type="button" class="tab" data-tab="news" data-i18n="tabNews">News</button>
+            <button type="button" class="tab" data-tab="dev" data-i18n="tabDev">Dev</button>
+            <button type="button" class="tab" data-tab="calendar" data-i18n="tabCalendar">Calendar</button>
             <button type="button" class="tab" data-tab="custom" data-i18n="tabCustom">Custom</button>
           </div>
           <div class="toolbar-actions">
@@ -51,6 +53,14 @@
         <section id="add-panel" class="add-panel" hidden>
           <h2 class="section-title" data-i18n="addSource">Add source</h2>
           <label class="field">
+            <span data-i18n="sourceTypeLabel">Source type</span>
+            <select id="source-type">
+              <option value="rss" data-i18n="sourceTypeRss">RSS / Atom</option>
+              <option value="github" data-i18n="sourceTypeGithub">GitHub</option>
+              <option value="ics" data-i18n="sourceTypeIcs">Calendar (ICS)</option>
+            </select>
+          </label>
+          <label class="field" id="field-feed-url">
             <span data-i18n="feedUrlLabel">Feed URL</span>
             <input
               id="feed-url"
@@ -62,15 +72,27 @@
               placeholder="https://example.com/feed.xml"
             />
           </label>
+          <label class="field" id="field-gh-token" hidden>
+            <span data-i18n="ghTokenLabel">Personal access token (optional)</span>
+            <input
+              id="gh-token"
+              type="password"
+              autocomplete="off"
+              data-i18n-placeholder="ghTokenPlaceholder"
+              placeholder="ghp_…"
+            />
+          </label>
           <label class="field">
             <span data-i18n="categoryLabel">Category</span>
             <select id="feed-category">
               <option value="news" data-i18n="catNews">News</option>
+              <option value="dev" data-i18n="catDev">Dev</option>
+              <option value="calendar" data-i18n="catCalendar">Calendar</option>
               <option value="custom" data-i18n="catCustom">Custom</option>
             </select>
           </label>
           <div class="form-actions">
-            <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add feed</button>
+            <button type="button" class="btn primary" id="confirm-add-btn" data-i18n="addFeed">Add</button>
             <button type="button" class="btn ghost" id="cancel-add-btn" data-i18n="cancel">Cancel</button>
           </div>
         </section>
@@ -88,7 +110,7 @@
         <ul id="ping-list" class="ping-list"></ul>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.1.0</div>
+      <div class="mp-version-strip" id="version-strip">v0.2.0</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

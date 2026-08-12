@@ -60,6 +60,26 @@ export async function markPingRead(id: string, read = true): Promise<PingItem[]>
   return next;
 }
 
+export async function silenceSource(sourceId: string, hours: number): Promise<PingSource[]> {
+  const sources = await loadSources();
+  const until = new Date(Date.now() + hours * 3_600_000).toISOString();
+  const next = sources.map((s) => (s.id === sourceId ? { ...s, silencedUntil: until } : s));
+  await saveSources(next);
+  return next;
+}
+
+export async function unsilenceSource(sourceId: string): Promise<PingSource[]> {
+  const sources = await loadSources();
+  const next = sources.map((s) => (s.id === sourceId ? { ...s, silencedUntil: null } : s));
+  await saveSources(next);
+  return next;
+}
+
+export function isSourceSilenced(source: PingSource): boolean {
+  if (!source.silencedUntil) return false;
+  return new Date(source.silencedUntil).getTime() > Date.now();
+}
+
 export async function removeSourceAndPings(sourceId: string): Promise<{ sources: PingSource[]; pings: PingItem[] }> {
   const sources = (await loadSources()).filter((s) => s.id !== sourceId);
   const pings = (await loadPings()).filter((p) => p.sourceId !== sourceId);

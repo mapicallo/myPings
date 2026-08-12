@@ -1,6 +1,6 @@
-export type PingCategory = 'all' | 'news' | 'custom';
+export type PingCategory = 'all' | 'news' | 'dev' | 'calendar' | 'custom';
 
-export type SourceType = 'rss';
+export type SourceType = 'rss' | 'github' | 'ics';
 
 export type PingSource = {
   id: string;
@@ -9,7 +9,15 @@ export type PingSource = {
   title: string;
   category: Exclude<PingCategory, 'all'>;
   createdAt: string;
+  /** GitHub personal access token (stored locally). */
+  token?: string;
+  /** GitHub: event types to include. */
+  ghEvents?: GithubEventFilter[];
+  /** ISO timestamp — source silenced until this time (null = active). */
+  silencedUntil?: string | null;
 };
+
+export type GithubEventFilter = 'issues' | 'pulls' | 'releases' | 'mentions';
 
 export type PingItem = {
   id: string;
@@ -23,4 +31,4 @@ export type PingItem = {
   read: boolean;
 };
 
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.2.0';

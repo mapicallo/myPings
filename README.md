@@ -2,7 +2,7 @@
 
 **My Pings — All your chosen alerts in one list**
 
-Chrome extension (AI4Context): an on-demand funnel of alerts from sources you choose. **v0.1.0** ships RSS/Atom feeds.
+Chrome extension (AI4Context): an on-demand funnel of alerts from sources you choose. **v0.2.0** ships RSS/Atom, GitHub events, and ICS calendars.
 
 | | |
 |--|--|
@@ -21,7 +21,7 @@ npm run pack
 
 Chrome → Extensions → Developer mode → Load unpacked → `apps/extension/dist`.
 
-1. Add an RSS/Atom URL (grant host permission when prompted).  
+1. Add a source (RSS, GitHub events URL, or ICS calendar URL).  
 2. Tap **Refresh**.  
 3. Open / mark read items in the funnel.
 
@@ -29,8 +29,9 @@ Chrome → Extensions → Developer mode → Load unpacked → `apps/extension/d
 
 | Version | Scope |
 |---------|--------|
-| **0.1.0** | Fase 0+1: panel AI4Context, i18n EN/ES, RSS embudo |
-| 0.2.x | GitHub + calendar (planned) |
+| **0.2.0** | Fase 2: GitHub + ICS calendar, tabs Dev/Calendar, silence source |
+| 0.1.0 | Fase 0+1: panel AI4Context, i18n EN/ES, RSS embudo |
+| 0.3.x | Email metadata + HN/Reddit (planned) |
 
 ## Privacy
 

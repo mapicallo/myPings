@@ -651,7 +651,7 @@ void (async () => {
   await reloadState();
 
   if (!isExtension() && 'serviceWorker' in navigator) {
-    const swUrl = `${import.meta.env.BASE_URL}sw.js`;
+    const swUrl = `${import.meta.env.BASE_URL}sw.js?v=${APP_VERSION}`;
     void navigator.serviceWorker.register(swUrl).catch(() => {
       /* offline or blocked — app still works without SW */
     });

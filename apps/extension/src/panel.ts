@@ -1,5 +1,6 @@
 import {
   applyStaticTranslations,
+  getLocale,
   initI18n,
   setLocale,
   t,
@@ -61,6 +62,11 @@ const GUIDE_KEYS: Record<SourceType, MessageKey> = {
   hn: 'sourceGuideHn',
   reddit: 'sourceGuideReddit',
   gmail: 'sourceGuideGmail',
+};
+
+const GMAIL_GUIDE_URLS: Record<Locale, string> = {
+  en: 'https://github.com/mapicallo/myPings/blob/main/apps/extension/GMAIL_OAUTH.en.md',
+  es: 'https://github.com/mapicallo/myPings/blob/main/apps/extension/GMAIL_OAUTH.md',
 };
 
 const URL_HINT_KEYS: Partial<Record<SourceType, MessageKey>> = {
@@ -200,6 +206,11 @@ function withExtId(key: 'errorGmailNotConfigured' | 'errorGmailOAuthFailed' | 'g
   return t(key).replace('{extId}', gmailExtensionId());
 }
 
+function updateGmailSetupLink(): void {
+  gmailSetupLink.textContent = t('gmailSetupLink');
+  gmailSetupLink.href = GMAIL_GUIDE_URLS[getLocale()];
+}
+
 function syncAddForm(): void {
   const st = sourceTypeSelect.value as SourceType;
   const gmailReady = isGmailOAuthConfigured();
@@ -212,6 +223,7 @@ function syncAddForm(): void {
     gmailSetupNotice.hidden = false;
     gmailSetupNotice.textContent = withExtId('gmailSetupNotice');
     gmailSetupLink.hidden = false;
+    updateGmailSetupLink();
   } else {
     gmailSetupNotice.hidden = true;
     gmailSetupLink.hidden = true;

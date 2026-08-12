@@ -37,6 +37,7 @@ const feedUrlInput = document.getElementById('feed-url') as HTMLInputElement;
 const feedCategory = document.getElementById('feed-category') as HTMLSelectElement;
 const sourceTypeSelect = document.getElementById('source-type') as HTMLSelectElement;
 const fieldFeedUrl = document.getElementById('field-feed-url')!;
+const fieldGmailAction = document.getElementById('field-gmail-action')!;
 const fieldGhToken = document.getElementById('field-gh-token')!;
 const ghTokenInput = document.getElementById('gh-token') as HTMLInputElement;
 const priorityKeywordsInput = document.getElementById('priority-keywords') as HTMLInputElement;
@@ -197,10 +198,13 @@ function syncAddForm(): void {
   const st = sourceTypeSelect.value as SourceType;
   fieldGhToken.hidden = st !== 'github';
   fieldFeedUrl.hidden = st === 'gmail';
+  fieldGmailAction.hidden = st !== 'gmail';
 
   sourceTypeGuide.textContent = t(GUIDE_KEYS[st]);
   const hintKey = URL_HINT_KEYS[st];
   fieldUrlHint.textContent = hintKey ? t(hintKey) : '';
+
+  confirmAddBtn.textContent = st === 'gmail' ? t('addGmailBtn') : t('addFeed');
 
   if (st === 'github') {
     feedUrlInput.placeholder = t('ghUrlPlaceholder');
@@ -225,8 +229,8 @@ function syncAddForm(): void {
 function renderAll(): void {
   renderSources();
   renderPings();
-  syncAddForm();
   applyStaticTranslations();
+  syncAddForm();
   versionStrip.textContent = `v${APP_VERSION}`;
 }
 

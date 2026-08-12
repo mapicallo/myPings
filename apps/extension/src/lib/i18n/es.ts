@@ -64,6 +64,10 @@ export const es: Messages = {
   redditUrlPlaceholder: 'chrome_extensions',
   gmailConnect: 'Conectar Gmail al añadir (OAuth)',
   gmailConnected: 'Gmail conectado',
+  gmailActionTitle: 'No hay que pegar ninguna URL — conecta tu cuenta',
+  gmailActionSteps:
+    'Pulsa “Conectar Gmail” abajo. Google te pedirá iniciar sesión y autorizar acceso de solo lectura a metadatos del correo no leído (remitente, asunto, fecha). Nunca se lee el cuerpo del mensaje.',
+  addGmailBtn: 'Conectar Gmail',
   priorityKeywordsLabel: 'Palabras clave prioritarias (opcional)',
   priorityKeywordsPlaceholder: 'urgente, factura, plazo',
   priorityBadge: 'prioridad',

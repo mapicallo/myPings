@@ -64,6 +64,10 @@ export const en: Messages = {
   redditUrlPlaceholder: 'chrome_extensions',
   gmailConnect: 'Connect Gmail on add (OAuth)',
   gmailConnected: 'Gmail connected',
+  gmailActionTitle: 'No URL to paste — connect your account',
+  gmailActionSteps:
+    'Tap “Connect Gmail” below. Google will ask you to sign in and grant read-only access to unread mail metadata (sender, subject, date). Email body is never read.',
+  addGmailBtn: 'Connect Gmail',
   priorityKeywordsLabel: 'Priority keywords (optional)',
   priorityKeywordsPlaceholder: 'urgent, invoice, deadline',
   priorityBadge: 'priority',

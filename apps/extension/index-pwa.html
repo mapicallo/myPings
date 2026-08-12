@@ -63,6 +63,18 @@
             <button type="button" class="btn secondary btn-block-mobile" id="refresh-btn" data-i18n="refresh">Refresh</button>
           </div>
 
+          <label class="search-field">
+            <span class="visually-hidden" data-i18n="searchPingsLabel">Search pings</span>
+            <input
+              type="search"
+              id="pings-search"
+              autocomplete="off"
+              spellcheck="false"
+              data-i18n-placeholder="searchPingsPlaceholder"
+              placeholder="Search pings…"
+            />
+          </label>
+
           <p id="status-line" class="status-line" hidden></p>
 
           <section id="empty-state" class="empty-state" hidden>
@@ -70,6 +82,8 @@
             <p class="empty-hint" data-i18n="emptyHint"></p>
             <button type="button" class="btn primary" id="empty-go-sources" data-i18n="emptyGoSources"></button>
           </section>
+
+          <p id="pings-search-empty" class="search-empty" hidden data-i18n="searchNoResults">No matches.</p>
 
           <ul id="ping-list" class="ping-list"></ul>
         </section>
@@ -186,13 +200,25 @@
               </button>
               <input type="file" id="import-sources-file" accept=".json,application/json" hidden />
             </div>
+            <label class="search-field">
+              <span class="visually-hidden" data-i18n="searchSourcesLabel">Search sources</span>
+              <input
+                type="search"
+                id="sources-search"
+                autocomplete="off"
+                spellcheck="false"
+                data-i18n-placeholder="searchSourcesPlaceholder"
+                placeholder="Search sources…"
+              />
+            </label>
             <p id="sources-status" class="status-line" hidden></p>
+            <p id="sources-search-empty" class="search-empty" hidden data-i18n="searchNoResults">No matches.</p>
             <ul id="sources-list" class="sources-list"></ul>
           </section>
         </section>
       </main>
 
-      <div class="mp-version-strip" id="version-strip">v0.5.0</div>
+      <div class="mp-version-strip" id="version-strip">v0.5.1</div>
 
       <footer class="mp-site-footer" role="contentinfo">
         <div class="mp-site-footer-inner">

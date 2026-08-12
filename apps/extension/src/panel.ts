@@ -61,6 +61,10 @@ const sourcesStatus = document.getElementById('sources-status')!;
 const pingList = document.getElementById('ping-list')!;
 const emptyState = document.getElementById('empty-state')!;
 const emptyGoSources = document.getElementById('empty-go-sources') as HTMLButtonElement;
+const pingsSearch = document.getElementById('pings-search') as HTMLInputElement;
+const sourcesSearch = document.getElementById('sources-search') as HTMLInputElement;
+const pingsSearchEmpty = document.getElementById('pings-search-empty')!;
+const sourcesSearchEmpty = document.getElementById('sources-search-empty')!;
 const versionStrip = document.getElementById('version-strip')!;
 const privacyLink = document.getElementById('privacy-link') as HTMLAnchorElement;
 
@@ -133,9 +137,44 @@ function parseKeywords(raw: string): string[] | undefined {
   return list.length ? list : undefined;
 }
 
+function normalizeQuery(raw: string): string {
+  return raw.trim().toLowerCase();
+}
+
+function matchesQuery(haystack: string, query: string): boolean {
+  if (!query) return true;
+  return haystack.toLowerCase().includes(query);
+}
+
+function pingMatchesSearch(p: PingItem, query: string): boolean {
+  if (!query) return true;
+  const hay = [p.title, p.sourceTitle, p.category, p.url].join(' ');
+  return matchesQuery(hay, query);
+}
+
+function sourceMatchesSearch(s: PingSource, query: string): boolean {
+  if (!query) return true;
+  const hay = [
+    s.title,
+    s.url,
+    s.type,
+    s.category,
+    ...(s.priorityKeywords ?? []),
+  ].join(' ');
+  return matchesQuery(hay, query);
+}
+
 function visiblePings(): PingItem[] {
-  const filtered = activeTab === 'all' ? pings : pings.filter((p) => p.category === activeTab);
+  const byTab = activeTab === 'all' ? pings : pings.filter((p) => p.category === activeTab);
+  const query = normalizeQuery(pingsSearch.value);
+  const filtered = query ? byTab.filter((p) => pingMatchesSearch(p, query)) : byTab;
   return sortWithPriority(filtered, sources);
+}
+
+function visibleSources(): PingSource[] {
+  const query = normalizeQuery(sourcesSearch.value);
+  if (!query) return sources;
+  return sources.filter((s) => sourceMatchesSearch(s, query));
 }
 
 function setScreen(screen: Screen): void {
@@ -156,11 +195,24 @@ function setScreen(screen: Screen): void {
 }
 
 function renderSources(): void {
+  const list = visibleSources();
+  const querying = normalizeQuery(sourcesSearch.value).length > 0;
+
   if (!sources.length) {
+    sourcesSearchEmpty.hidden = true;
     sourcesList.innerHTML = `<li class="muted">${t('noSources')}</li>`;
     return;
   }
-  sourcesList.innerHTML = sources
+
+  if (!list.length) {
+    sourcesList.innerHTML = '';
+    sourcesSearchEmpty.hidden = !querying;
+    sourcesSearchEmpty.textContent = t('searchNoResults');
+    return;
+  }
+
+  sourcesSearchEmpty.hidden = true;
+  sourcesList.innerHTML = list
     .map((s) => {
       const silenced = isSourceSilenced(s);
       const silenceBadge = silenced
@@ -191,9 +243,18 @@ function renderSources(): void {
 
 function renderPings(): void {
   const list = visiblePings();
-  emptyState.hidden = list.length > 0;
+  const hasAny = pings.length > 0;
+
+  emptyState.hidden = hasAny;
+  pingsSearchEmpty.hidden = !(hasAny && !list.length);
+  if (hasAny && !list.length) {
+    pingsSearchEmpty.textContent = t('searchNoResults');
+  }
   pingList.hidden = list.length === 0;
-  if (!list.length) { pingList.innerHTML = ''; return; }
+  if (!list.length) {
+    pingList.innerHTML = '';
+    return;
+  }
   pingList.innerHTML = list
     .map((p) => {
       const when = relativeTime(p.publishedAt || p.receivedAt);
@@ -577,6 +638,9 @@ privacyLink.addEventListener('click', (e) => {
 
 bindCategoryTabs();
 bindPrimaryNav();
+
+pingsSearch.addEventListener('input', () => renderPings());
+sourcesSearch.addEventListener('input', () => renderSources());
 
 void (async () => {
   const locale = await initI18n();

@@ -1,5 +1,6 @@
 import { en } from './en.js';
 import { es } from './es.js';
+import { storageGet, storageSet } from '../platform.js';
 import {
   detectLocaleFromNavigator,
   isLocale,
@@ -44,8 +45,12 @@ export async function initI18n(): Promise<Locale> {
 
 export async function setLocale(locale: Locale): Promise<void> {
   current = locale;
-  await saveLocale(locale);
   applyStaticTranslations();
+  try {
+    await saveLocale(locale);
+  } catch (err) {
+    console.warn('[My Pings] could not persist locale', err);
+  }
 }
 
 export function applyStaticTranslations(): void {
